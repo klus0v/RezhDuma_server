@@ -2,7 +2,10 @@ package com.example.rezh.models;
 
 import com.example.rezh.entities.NewsEntity;
 
+import java.sql.Array;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class News {
     private Integer id;
@@ -23,6 +26,23 @@ public class News {
 
         return news;
     }
+
+    public static List<News> toModel(Iterable<NewsEntity> newsEntities) {
+        List<News> newsModels = new ArrayList<News>();
+        for (NewsEntity newsEntity: newsEntities ) {
+            News news = new News();
+
+            news.setId(newsEntity.getId());
+            news.setTitle(newsEntity.getTitle());
+            news.setText(newsEntity.getText());
+            news.setFiles(newsEntity.getFiles());
+            news.setNewsDate(newsEntity.getNewsDate());
+
+            newsModels.add(news);
+        }
+        return newsModels;
+    }
+
     public News() {
 
     }

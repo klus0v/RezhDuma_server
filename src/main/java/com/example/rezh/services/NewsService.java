@@ -7,8 +7,7 @@ import com.example.rezh.repositories.NewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 @Service
 public class NewsService {
@@ -17,12 +16,12 @@ public class NewsService {
     private NewsRepository newsRepository;
 
 
-    public News getOneNews(Integer id) throws NewsNotFoundException {
+    public NewsEntity getOneNews(Integer id) throws NewsNotFoundException {
         NewsEntity news = newsRepository.findById(id).get();
         if (news == null){
             throw new NewsNotFoundException("Новость не найдена");
         }
-        return News.toModel(news);
+        return news;
     }
 
     public Iterable<NewsEntity> getAllNews(){
@@ -36,6 +35,19 @@ public class NewsService {
     public Integer deleteNews(Integer id) {
         newsRepository.deleteById(id);
         return id;
+    }
+
+    public void editNews(NewsEntity newNews, Integer id) throws NewsNotFoundException {
+        NewsEntity currentNews = getOneNews(id);
+        if (newNews.getTitle() != null)
+            currentNews.setTitle(newNews.getTitle());
+        if (newNews.getText() != null)
+            currentNews.setText(newNews.getText());
+        if (newNews.getFiles() != null)
+            currentNews.setFiles(newNews.getFiles());
+        if (newNews.getIsEvent() != null)
+            currentNews.setIsEvent(newNews.getIsEvent());
+        postNews(currentNews);
     }
 
 }
