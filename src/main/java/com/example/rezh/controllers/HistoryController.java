@@ -17,8 +17,8 @@ public class HistoryController {
     private HistoryService historyService;
 
 
-    @GetMapping(params = {"id"})
-    public ResponseEntity getOneHistory(@RequestParam Integer id) {
+    @GetMapping(value = "{id}")
+    public ResponseEntity getOneHistory(@PathVariable Integer id) {
         try {
             return ResponseEntity.ok(History.toModel(historyService.getOneHistory(id)));
         } catch (HistoryNotFoundException e) {
@@ -48,21 +48,26 @@ public class HistoryController {
         }
     }
 
-    @DeleteMapping(params = {"id"})
-    public ResponseEntity deleteHistory(@RequestParam Integer id) {
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity deleteHistory(@PathVariable Integer id) {
         try {
             historyService.deleteHistory(id);
             return ResponseEntity.ok("История удалена");
+        } catch (HistoryNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity editHistory(@RequestBody HistoryEntity history, @PathVariable Integer id) {
+    public ResponseEntity editHistory(@RequestBody HistoryEntity history,
+                                      @PathVariable Integer id) {
         try {
             historyService.editHistory(history, id);
             return ResponseEntity.ok("История изменена");
+        } catch (HistoryNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

@@ -18,8 +18,8 @@ public class DocumentController {
     private DocumentService documentService;
 
 
-    @GetMapping(params = {"id"})
-    public ResponseEntity getOneDocument(@RequestParam Integer id) {
+    @GetMapping(value = "{id}")
+    public ResponseEntity getOneDocument(@PathVariable Integer id) {
         try {
             return ResponseEntity.ok(Document.toModel(documentService.getOneDocument(id)));
         } catch (DocumentNotFoundException e ) {
@@ -48,12 +48,15 @@ public class DocumentController {
         }
     }
 
-    @DeleteMapping(params = {"id"})
-    public ResponseEntity deleteDocument(@RequestParam Integer id) {
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity deleteDocument(@PathVariable Integer id) {
         try {
             documentService.deleteDocument(id);
             return ResponseEntity.ok("Документ удален");
-        } catch (Exception e) {
+        } catch (DocumentNotFoundException e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
@@ -63,6 +66,8 @@ public class DocumentController {
         try {
             documentService.editDocument(document, id);
             return ResponseEntity.ok("Документ изменен");
+        } catch (DocumentNotFoundException e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

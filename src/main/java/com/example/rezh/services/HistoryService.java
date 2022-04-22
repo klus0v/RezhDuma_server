@@ -1,6 +1,7 @@
 package com.example.rezh.services;
 
 import com.example.rezh.entities.HistoryEntity;
+import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.exceptions.HistoryNotFoundException;
 import com.example.rezh.models.History;
 import com.example.rezh.repositories.HistoryRepository;
@@ -16,11 +17,12 @@ public class HistoryService {
 
 
     public HistoryEntity getOneHistory(Integer id) throws HistoryNotFoundException {
-        HistoryEntity history = historyRepository.findById(id).get();
-        if (history == null){
-            throw new HistoryNotFoundException("Проект не найден");
+        var history = historyRepository.findById(id);
+        if (history.isEmpty()){
+            throw new HistoryNotFoundException("История не найдена");
         }
-        return history;
+
+        return history.get();
     }
 
     public Iterable<HistoryEntity> getAllHistory(){
@@ -31,12 +33,20 @@ public class HistoryService {
         return historyRepository.save(history);
     }
 
-    public Integer deleteHistory(Integer id) {
+    public Integer deleteHistory(Integer id) throws HistoryNotFoundException {
+        var history = historyRepository.findById(id);
+        if (history.isEmpty()){
+            throw new HistoryNotFoundException("История не найдена");
+        }
         historyRepository.deleteById(id);
         return id;
     }
 
     public void editHistory(HistoryEntity newHistory, Integer id) throws HistoryNotFoundException {
+        var history = historyRepository.findById(id);
+        if (history.isEmpty()){
+            throw new HistoryNotFoundException("История не найдена");
+        }
         HistoryEntity currentHistory = getOneHistory(id);
         if (newHistory.getTitle() != null)
             currentHistory.setTitle(newHistory.getTitle());

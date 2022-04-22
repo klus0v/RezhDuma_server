@@ -16,8 +16,8 @@ public class ProjectController {
     private ProjectService projectService;
 
 
-    @GetMapping(params = {"id"})
-    public ResponseEntity getOneProject(@RequestParam Integer id) {
+    @GetMapping(value = "{id}")
+    public ResponseEntity getOneProject(@PathVariable Integer id) {
         try {
             return ResponseEntity.ok(Project.toModel(projectService.getOneProject(id)));
         } catch (ProjectNotFoundException e ) {
@@ -47,21 +47,26 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping(params = {"id"})
-    public ResponseEntity deleteProject(@RequestParam Integer id) {
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity deleteProject(@PathVariable Integer id) {
         try {
             projectService.deleteProject(id);
             return ResponseEntity.ok("Проект удален");
+        } catch (ProjectNotFoundException e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity editProject(@RequestBody ProjectEntity project, @PathVariable Integer id) {
+    public ResponseEntity editProject(@RequestBody ProjectEntity project,
+                                      @PathVariable Integer id) {
         try {
             projectService.editProject(project, id);
             return ResponseEntity.ok("Проект изменен");
+        } catch (ProjectNotFoundException e ) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

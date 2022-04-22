@@ -17,11 +17,11 @@ public class NewsService {
 
 
     public NewsEntity getOneNews(Integer id) throws NewsNotFoundException {
-        NewsEntity news = newsRepository.findById(id).get();
-        if (news == null){
+        var news = newsRepository.findById(id);
+        if (news.isEmpty()){
             throw new NewsNotFoundException("Новость не найдена");
         }
-        return news;
+        return news.get();
     }
 
     public Iterable<NewsEntity> getAllNews(){
@@ -32,12 +32,20 @@ public class NewsService {
         return newsRepository.save(news);
     }
 
-    public Integer deleteNews(Integer id) {
+    public Integer deleteNews(Integer id) throws NewsNotFoundException {
+        var news = newsRepository.findById(id);
+        if (news.isEmpty()){
+            throw new NewsNotFoundException("Новость не найдена");
+        }
         newsRepository.deleteById(id);
         return id;
     }
 
     public void editNews(NewsEntity newNews, Integer id) throws NewsNotFoundException {
+        var news = newsRepository.findById(id);
+        if (news.isEmpty()){
+            throw new NewsNotFoundException("Новость не найдена");
+        }
         NewsEntity currentNews = getOneNews(id);
         if (newNews.getTitle() != null)
             currentNews.setTitle(newNews.getTitle());

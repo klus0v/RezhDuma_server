@@ -1,6 +1,7 @@
 package com.example.rezh.services;
 
 import com.example.rezh.entities.ProjectEntity;
+import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.exceptions.ProjectNotFoundException;
 import com.example.rezh.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,11 @@ public class ProjectService {
 
 
     public ProjectEntity getOneProject(Integer id) throws ProjectNotFoundException {
-        ProjectEntity project = projectRepository.findById(id).get();
-        if (project == null){
+        var project = projectRepository.findById(id);
+        if (project.isEmpty()){
             throw new ProjectNotFoundException("Проект не найден");
         }
-        return project;
+        return project.get();
     }
 
     public Iterable<ProjectEntity> getAllProjects(){
@@ -30,12 +31,20 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Integer deleteProject(Integer id) {
+    public Integer deleteProject(Integer id) throws ProjectNotFoundException {
+        var project = projectRepository.findById(id);
+        if (project.isEmpty()){
+            throw new ProjectNotFoundException("Проект не найден");
+        }
         projectRepository.deleteById(id);
         return id;
     }
 
     public void editProject(ProjectEntity newProject, Integer id) throws ProjectNotFoundException {
+        var project = projectRepository.findById(id);
+        if (project.isEmpty()){
+            throw new ProjectNotFoundException("Проект не найден");
+        }
         ProjectEntity currentProject = getOneProject(id);
         if (newProject.getTitle() != null)
             currentProject.setTitle(newProject.getTitle());
