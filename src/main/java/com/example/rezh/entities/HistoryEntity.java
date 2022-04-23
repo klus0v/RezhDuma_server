@@ -20,7 +20,7 @@ public class HistoryEntity {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String files;
 
     @DateTimeFormat()

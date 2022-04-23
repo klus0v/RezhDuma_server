@@ -7,6 +7,7 @@ import com.example.rezh.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/projects")
@@ -38,9 +39,11 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity postProject(@RequestBody ProjectEntity project) {
+    public ResponseEntity postProject(@RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String text,
+                                      @RequestParam(required = false) MultipartFile files) {
         try {
-            projectService.postProject(project);
+            projectService.postProject(title, text, files);
             return ResponseEntity.ok("Проект добавлен");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -60,10 +63,12 @@ public class ProjectController {
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity editProject(@RequestBody ProjectEntity project,
+    public ResponseEntity editProject(@RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String text,
+                                      @RequestParam(required = false) MultipartFile files,
                                       @PathVariable Integer id) {
         try {
-            projectService.editProject(project, id);
+            projectService.editProject(title, text, files, id);
             return ResponseEntity.ok("Проект изменен");
         } catch (ProjectNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());

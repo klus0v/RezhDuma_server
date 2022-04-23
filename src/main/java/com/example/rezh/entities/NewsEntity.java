@@ -20,7 +20,7 @@ public class NewsEntity {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String files;
 
     private String isEvent;

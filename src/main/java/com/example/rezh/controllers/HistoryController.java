@@ -8,6 +8,7 @@ import com.example.rezh.services.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/history")
@@ -39,9 +40,11 @@ public class HistoryController {
     }
 
     @PostMapping
-    public ResponseEntity postHistory(@RequestBody HistoryEntity history) {
+    public ResponseEntity postHistory(@RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String text,
+                                      @RequestParam(required = false) MultipartFile files) {
         try {
-            historyService.postHistory(history);
+            historyService.postHistory(title, text, files);
             return ResponseEntity.ok("История добавлена");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -61,10 +64,12 @@ public class HistoryController {
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity editHistory(@RequestBody HistoryEntity history,
+    public ResponseEntity editHistory(@RequestParam(required = false) String title,
+                                      @RequestParam(required = false) String text,
+                                      @RequestParam(required = false) MultipartFile files,
                                       @PathVariable Integer id) {
         try {
-            historyService.editHistory(history, id);
+            historyService.editHistory(title, text, files, id);
             return ResponseEntity.ok("История изменена");
         } catch (HistoryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

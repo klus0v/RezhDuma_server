@@ -9,6 +9,7 @@ import com.example.rezh.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/documents")
@@ -39,9 +40,11 @@ public class DocumentController {
     }
 
     @PostMapping
-    public ResponseEntity postDocument(@RequestBody DocumentEntity document) {
+    public ResponseEntity postDocument(@RequestParam(required = false) String title,
+                                       @RequestParam(required = false) String text,
+                                       @RequestParam(required = false) MultipartFile files) {
         try {
-            documentService.postDocument(document);
+            documentService.postDocument(title, text, files);
             return ResponseEntity.ok("Документ добавлен");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -62,9 +65,12 @@ public class DocumentController {
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity editDocument(@RequestBody DocumentEntity document, @PathVariable Integer id) {
+    public ResponseEntity editDocument(@RequestParam(required = false) String title,
+                                       @RequestParam(required = false) String text,
+                                       @RequestParam(required = false) MultipartFile files,
+                                       @PathVariable Integer id) {
         try {
-            documentService.editDocument(document, id);
+            documentService.editDocument(title, text, files, id);
             return ResponseEntity.ok("Документ изменен");
         } catch (DocumentNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());

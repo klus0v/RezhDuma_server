@@ -2,7 +2,6 @@ package com.example.rezh.models;
 
 import com.example.rezh.entities.NewsEntity;
 
-import java.sql.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
