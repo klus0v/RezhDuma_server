@@ -1,8 +1,7 @@
-package com.example.rezh.controllers;
+package com.example.rezh.rest;
 
-import com.example.rezh.entities.ProjectEntity;
 import com.example.rezh.exceptions.ProjectNotFoundException;
-import com.example.rezh.models.Project;
+import com.example.rezh.models.ProjectModel;
 import com.example.rezh.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +9,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/projects")
-public class ProjectController {
+@CrossOrigin
+@RequestMapping("/api/projects")
+public class ProjectRestController {
 
     @Autowired
     private ProjectService projectService;
 
 
     @GetMapping(value = "{id}")
-    public ResponseEntity getOneProject(@PathVariable Integer id) {
+    public ResponseEntity getOneProject(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(Project.toModel(projectService.getOneProject(id)));
+            return ResponseEntity.ok().body(ProjectModel.toModel(projectService.getOneProject(id)));
         } catch (ProjectNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -32,7 +32,7 @@ public class ProjectController {
     @GetMapping
     public ResponseEntity getAllProjects() {
         try {
-            return ResponseEntity.ok(Project.toModel(projectService.getAllProjects()));
+            return ResponseEntity.ok().body(ProjectModel.toModel(projectService.getAllProjects()));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -51,10 +51,10 @@ public class ProjectController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteProject(@PathVariable Integer id) {
+    public ResponseEntity deleteProject(@PathVariable Long id) {
         try {
             projectService.deleteProject(id);
-            return ResponseEntity.ok("Проект удален");
+            return ResponseEntity.ok("Проект " + id + " удален");
         } catch (ProjectNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e ) {
@@ -66,10 +66,10 @@ public class ProjectController {
     public ResponseEntity editProject(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
                                       @RequestParam(required = false) MultipartFile files,
-                                      @PathVariable Integer id) {
+                                      @PathVariable Long id) {
         try {
             projectService.editProject(title, text, files, id);
-            return ResponseEntity.ok("Проект изменен");
+            return ResponseEntity.ok("Проект " + id + " изменен");
         } catch (ProjectNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

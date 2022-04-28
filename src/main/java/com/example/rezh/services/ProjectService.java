@@ -1,8 +1,6 @@
 package com.example.rezh.services;
 
-import com.example.rezh.entities.HistoryEntity;
-import com.example.rezh.entities.ProjectEntity;
-import com.example.rezh.exceptions.NewsNotFoundException;
+import com.example.rezh.entities.Project;
 import com.example.rezh.exceptions.ProjectNotFoundException;
 import com.example.rezh.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ public class ProjectService {
     private String uploadPath;
 
 
-    public ProjectEntity getOneProject(Integer id) throws ProjectNotFoundException {
+    public Project getOneProject(Long id) throws ProjectNotFoundException {
         var project = projectRepository.findById(id);
         if (project.isEmpty()){
             throw new ProjectNotFoundException("Проект не найден");
@@ -33,12 +31,12 @@ public class ProjectService {
         return project.get();
     }
 
-    public Iterable<ProjectEntity> getAllProjects(){
+    public Iterable<Project> getAllProjects(){
         return projectRepository.findAll();
     }
 
-    public ProjectEntity postProject(String title, String text, MultipartFile file) throws IOException {
-        ProjectEntity project = new ProjectEntity();
+    public Project postProject(String title, String text, MultipartFile file) throws IOException {
+        Project project = new Project();
 
         project.setTitle(title);
         project.setText(text);
@@ -47,7 +45,7 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Integer deleteProject(Integer id) throws ProjectNotFoundException {
+    public Long deleteProject(Long id) throws ProjectNotFoundException {
         var project = projectRepository.findById(id);
         if (project.isEmpty()){
             throw new ProjectNotFoundException("Проект не найден");
@@ -56,18 +54,18 @@ public class ProjectService {
         return id;
     }
 
-    public void editProject(String title, String text, MultipartFile file, Integer id) throws ProjectNotFoundException, IOException {
+    public void editProject(String title, String text, MultipartFile file, Long id) throws ProjectNotFoundException, IOException {
         var project = projectRepository.findById(id);
         if (project.isEmpty()){
             throw new ProjectNotFoundException("Проект не найден");
         }
-        ProjectEntity currentProject = getOneProject(id);
+        Project currentProject = getOneProject(id);
         if (title != null)
             currentProject.setTitle(title);
         if (text != null)
             currentProject.setText(text);
-        if (!file.isEmpty())
-            currentProject.setFiles(addFile(file));
+        currentProject.setFiles(addFile(file));
+
         projectRepository.save(currentProject);
     }
 

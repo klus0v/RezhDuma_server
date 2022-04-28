@@ -1,9 +1,8 @@
-package com.example.rezh.controllers;
+package com.example.rezh.rest;
 
 
-import com.example.rezh.entities.HistoryEntity;
 import com.example.rezh.exceptions.HistoryNotFoundException;
-import com.example.rezh.models.History;
+import com.example.rezh.models.HistoryModel;
 import com.example.rezh.services.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/history")
-public class HistoryController {
+@CrossOrigin
+@RequestMapping("/api/history")
+public class HistoryRestController {
 
     @Autowired
     private HistoryService historyService;
 
 
     @GetMapping(value = "{id}")
-    public ResponseEntity getOneHistory(@PathVariable Integer id) {
+    public ResponseEntity getOneHistory(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(History.toModel(historyService.getOneHistory(id)));
+            return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getOneHistory(id)));
         } catch (HistoryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -33,7 +33,7 @@ public class HistoryController {
     @GetMapping
     public ResponseEntity getAllHistory() {
         try {
-            return ResponseEntity.ok(History.toModel(historyService.getAllHistory()));
+            return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getAllHistory()));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -52,10 +52,10 @@ public class HistoryController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteHistory(@PathVariable Integer id) {
+    public ResponseEntity deleteHistory(@PathVariable Long id) {
         try {
             historyService.deleteHistory(id);
-            return ResponseEntity.ok("История удалена");
+            return ResponseEntity.ok("История " + id + " удалена");
         } catch (HistoryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e ) {
@@ -67,10 +67,10 @@ public class HistoryController {
     public ResponseEntity editHistory(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
                                       @RequestParam(required = false) MultipartFile files,
-                                      @PathVariable Integer id) {
+                                      @PathVariable Long id) {
         try {
             historyService.editHistory(title, text, files, id);
-            return ResponseEntity.ok("История изменена");
+            return ResponseEntity.ok("История " + id + " изменена");
         } catch (HistoryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

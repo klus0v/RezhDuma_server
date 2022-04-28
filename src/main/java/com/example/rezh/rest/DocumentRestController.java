@@ -1,10 +1,9 @@
-package com.example.rezh.controllers;
+package com.example.rezh.rest;
 
 
 
-import com.example.rezh.entities.DocumentEntity;
 import com.example.rezh.exceptions.DocumentNotFoundException;
-import com.example.rezh.models.Document;
+import com.example.rezh.models.DocumentModel;
 import com.example.rezh.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/documents")
-public class DocumentController {
+@CrossOrigin
+@RequestMapping("/api/documents")
+public class DocumentRestController {
 
     @Autowired
     private DocumentService documentService;
 
 
     @GetMapping(value = "{id}")
-    public ResponseEntity getOneDocument(@PathVariable Integer id) {
+    public ResponseEntity getOneDocument(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(Document.toModel(documentService.getOneDocument(id)));
+            return ResponseEntity.ok().body(DocumentModel.toModel(documentService.getOneDocument(id)));
         } catch (DocumentNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e ) {
@@ -33,7 +33,7 @@ public class DocumentController {
     @GetMapping
     public ResponseEntity getAllDocuments() {
         try {
-            return ResponseEntity.ok(Document.toModel(documentService.getAllDocuments()));
+            return ResponseEntity.ok().body(DocumentModel.toModel(documentService.getAllDocuments()));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -52,10 +52,10 @@ public class DocumentController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteDocument(@PathVariable Integer id) {
+    public ResponseEntity deleteDocument(@PathVariable Long id) {
         try {
             documentService.deleteDocument(id);
-            return ResponseEntity.ok("Документ удален");
+            return ResponseEntity.ok("Документ " + id + " удален");
         } catch (DocumentNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -68,10 +68,10 @@ public class DocumentController {
     public ResponseEntity editDocument(@RequestParam(required = false) String title,
                                        @RequestParam(required = false) String text,
                                        @RequestParam(required = false) MultipartFile files,
-                                       @PathVariable Integer id) {
+                                       @PathVariable Long id) {
         try {
             documentService.editDocument(title, text, files, id);
-            return ResponseEntity.ok("Документ изменен");
+            return ResponseEntity.ok("Документ " + id + " изменен");
         } catch (DocumentNotFoundException e ) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

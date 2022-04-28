@@ -1,8 +1,9 @@
 package com.example.rezh.repositories;
 
-import com.example.rezh.entities.NewsEntity;
+import com.example.rezh.entities.News;
 import org.springframework.data.repository.CrudRepository;
 
-public interface NewsRepository extends CrudRepository<NewsEntity, Integer> {
+public interface NewsRepository extends CrudRepository<News, Long> {
 
+    Iterable<News> findAllByEvent(Boolean True);
 }

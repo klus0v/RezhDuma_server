@@ -1,8 +1,8 @@
 package com.example.rezh.repositories;
 
-import com.example.rezh.entities.HistoryEntity;
+import com.example.rezh.entities.History;
 import org.springframework.data.repository.CrudRepository;
 
-public interface HistoryRepository extends CrudRepository<HistoryEntity, Integer> {
+public interface HistoryRepository extends CrudRepository<History, Long> {
 
 }

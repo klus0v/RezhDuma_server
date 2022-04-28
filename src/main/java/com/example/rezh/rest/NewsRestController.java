@@ -1,30 +1,29 @@
-package com.example.rezh.controllers;
+package com.example.rezh.rest;
 
 
-import com.example.rezh.entities.NewsEntity;
+
 import com.example.rezh.exceptions.NewsNotFoundException;
-import com.example.rezh.models.News;
+import com.example.rezh.models.NewsModel;
 import com.example.rezh.services.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 
 @RestController
-@RequestMapping("/news")
-public class NewsController {
+@CrossOrigin
+@RequestMapping("/api/news")
+public class NewsRestController {
 
     @Autowired
     private NewsService newsService;
 
 
     @GetMapping(value = "{id}")
-    public ResponseEntity getOneNews(@PathVariable Integer id) {
+    public ResponseEntity getOneNews(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(News.toModel(newsService.getOneNews(id)));
+            return ResponseEntity.ok().body(NewsModel.toModel(newsService.getOneNews(id)));
         } catch (NewsNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -35,7 +34,17 @@ public class NewsController {
     @GetMapping
     public ResponseEntity getAllNews() {
         try {
-            return ResponseEntity.ok(News.toModel(newsService.getAllNews()));
+            return ResponseEntity.ok(NewsModel.toModel(newsService.getAllNews()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @GetMapping
+    @RequestMapping("/events")
+    public ResponseEntity getAllEvents() {
+        try {
+            return ResponseEntity.ok().body(NewsModel.toModel(newsService.getEvents()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -44,10 +53,10 @@ public class NewsController {
     @PostMapping
     public ResponseEntity postNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
-                                   @RequestParam(required = false) String isEvent,
-                                   @RequestParam(required = false) MultipartFile file) {
+                                   @RequestParam(required = false) Boolean event,
+                                   @RequestParam(required = false) MultipartFile files) {
         try {
-            newsService.postNews(title, text, isEvent, file);
+            newsService.postNews(title, text, event, files);
             return ResponseEntity.ok("Новость добавлена");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -55,10 +64,10 @@ public class NewsController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteNews(@PathVariable Integer id) {
+    public ResponseEntity deleteNews(@PathVariable Long id) {
         try {
             newsService.deleteNews(id);
-            return ResponseEntity.ok("Новость удалена");
+            return ResponseEntity.ok("Новость " + id + " удалена");
         } catch (NewsNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -69,12 +78,12 @@ public class NewsController {
     @PutMapping(value = "{id}")
     public ResponseEntity editNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
-                                   @RequestParam(required = false) String isEvent,
+                                   @RequestParam(required = false) Boolean event,
                                    @RequestParam(required = false) MultipartFile files,
-                                   @PathVariable Integer id) {
+                                   @PathVariable Long id) {
         try {
-            newsService.editNews(title, text, isEvent, files, id);
-            return ResponseEntity.ok("Новость изменена");
+            newsService.editNews(title, text, event, files, id);
+            return ResponseEntity.ok("Новость " + id + " изменена");
         } catch (NewsNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

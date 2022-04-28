@@ -1,9 +1,7 @@
 package com.example.rezh.services;
 
-import com.example.rezh.entities.HistoryEntity;
-import com.example.rezh.exceptions.DocumentNotFoundException;
+import com.example.rezh.entities.History;
 import com.example.rezh.exceptions.HistoryNotFoundException;
-import com.example.rezh.models.History;
 import com.example.rezh.repositories.HistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +23,7 @@ public class HistoryService {
     private String uploadPath;
 
 
-    public HistoryEntity getOneHistory(Integer id) throws HistoryNotFoundException {
+    public History getOneHistory(Long id) throws HistoryNotFoundException {
         var history = historyRepository.findById(id);
         if (history.isEmpty()){
             throw new HistoryNotFoundException("История не найдена");
@@ -34,12 +32,12 @@ public class HistoryService {
         return history.get();
     }
 
-    public Iterable<HistoryEntity> getAllHistory(){
+    public Iterable<History> getAllHistory(){
         return historyRepository.findAll();
     }
 
-    public HistoryEntity postHistory(String title, String text, MultipartFile file) throws IOException {
-        HistoryEntity history = new HistoryEntity();
+    public History postHistory(String title, String text, MultipartFile file) throws IOException {
+        History history = new History();
 
         history.setTitle(title);
         history.setText(text);
@@ -48,7 +46,7 @@ public class HistoryService {
         return historyRepository.save(history);
     }
 
-    public Integer deleteHistory(Integer id) throws HistoryNotFoundException {
+    public Long deleteHistory(Long id) throws HistoryNotFoundException {
         var history = historyRepository.findById(id);
         if (history.isEmpty()){
             throw new HistoryNotFoundException("История не найдена");
@@ -57,18 +55,18 @@ public class HistoryService {
         return id;
     }
 
-    public void editHistory(String title, String text, MultipartFile file, Integer id) throws HistoryNotFoundException, IOException {
+    public void editHistory(String title, String text, MultipartFile file, Long id) throws HistoryNotFoundException, IOException {
         var history = historyRepository.findById(id);
         if (history.isEmpty()){
             throw new HistoryNotFoundException("История не найдена");
         }
-        HistoryEntity currentHistory = getOneHistory(id);
+        History currentHistory = getOneHistory(id);
         if (title != null)
             currentHistory.setTitle(title);
         if (text != null)
             currentHistory.setText(text);
-        if (!file.isEmpty())
-            currentHistory.setFiles(addFile(file));
+        currentHistory.setFiles(addFile(file));
+
         historyRepository.save(currentHistory);
     }
 

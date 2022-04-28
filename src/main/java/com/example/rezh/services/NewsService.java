@@ -1,6 +1,6 @@
 package com.example.rezh.services;
 
-import com.example.rezh.entities.NewsEntity;
+import com.example.rezh.entities.News;
 import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.repositories.NewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class NewsService {
     private String uploadPath;
 
 
-    public NewsEntity getOneNews(Integer id) throws NewsNotFoundException {
+    public News getOneNews(Long id) throws NewsNotFoundException {
         var news = newsRepository.findById(id);
         if (news.isEmpty()){
             throw new NewsNotFoundException("Новость не найдена");
@@ -31,21 +31,21 @@ public class NewsService {
         return news.get();
     }
 
-    public Iterable<NewsEntity> getAllNews(){
+    public Iterable<News> getAllNews(){
         return newsRepository.findAll();
     }
 
-    public NewsEntity postNews(String title, String text, String isEvent, MultipartFile file) throws IOException {
-        NewsEntity news = new NewsEntity();
+    public News postNews(String title, String text, Boolean event, MultipartFile file) throws IOException {
+        News news = new News();
         news.setTitle(title);
         news.setText(text);
-        news.setIsEvent(isEvent);
+        news.setEvent(event);
         news.setFiles(addFile(file));
 
         return newsRepository.save(news);
     }
 
-    public Integer deleteNews(Integer id) throws NewsNotFoundException {
+    public Long deleteNews(Long id) throws NewsNotFoundException {
         var news = newsRepository.findById(id);
         if (news.isEmpty()){
             throw new NewsNotFoundException("Новость не найдена");
@@ -54,20 +54,20 @@ public class NewsService {
         return id;
     }
 
-    public void editNews(String title, String text, String isEvent, MultipartFile file, Integer id) throws NewsNotFoundException, IOException {
+    public void editNews(String title, String text, Boolean event, MultipartFile file, Long id) throws NewsNotFoundException, IOException {
         var news = newsRepository.findById(id);
         if (news.isEmpty()){
             throw new NewsNotFoundException("Новость не найдена");
         }
-        NewsEntity currentNews = getOneNews(id);
+        News currentNews = getOneNews(id);
         if (title != null)
             currentNews.setTitle(title);
         if (text != null)
             currentNews.setText(text);
-        if (!file.isEmpty())
-            currentNews.setFiles(addFile(file));
-        if (isEvent != null)
-            currentNews.setIsEvent(isEvent);
+        if (event)
+            currentNews.setEvent(event);
+        currentNews.setFiles(addFile(file));
+
         newsRepository.save(currentNews);
     }
 
@@ -84,6 +84,10 @@ public class NewsService {
             return (uploadPath + "/" + resultFileName);
         }
         return null;
+    }
+
+    public Iterable<News> getEvents() {
+        return newsRepository.findAllByEvent(true);
     }
 }
 

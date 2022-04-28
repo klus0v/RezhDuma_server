@@ -1,8 +1,7 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.entities.DocumentEntity;
-import com.example.rezh.entities.HistoryEntity;
+import com.example.rezh.entities.Document;
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.repositories.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class DocumentService {
     private String uploadPath;
 
 
-    public DocumentEntity getOneDocument(Integer id) throws DocumentNotFoundException {
+    public Document getOneDocument(Long id) throws DocumentNotFoundException {
         var document = documentRepository.findById(id);
         if (document.isEmpty()){
             throw new DocumentNotFoundException("Документ не найден");
@@ -33,12 +32,12 @@ public class DocumentService {
         return document.get();
     }
 
-    public Iterable<DocumentEntity> getAllDocuments(){
+    public Iterable<Document> getAllDocuments(){
         return documentRepository.findAll();
     }
 
-    public DocumentEntity postDocument(String title, String text, MultipartFile file) throws IOException {
-        DocumentEntity document = new DocumentEntity();
+    public Document postDocument(String title, String text, MultipartFile file) throws IOException {
+        Document document = new Document();
 
         document.setTitle(title);
         document.setText(text);
@@ -47,7 +46,7 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
-    public Integer deleteDocument(Integer id) throws DocumentNotFoundException{
+    public Long deleteDocument(Long id) throws DocumentNotFoundException{
         var document = documentRepository.findById(id);
         if (document.isEmpty()){
             throw new DocumentNotFoundException("Документ не найден");
@@ -56,18 +55,18 @@ public class DocumentService {
         return id;
     }
 
-    public void editDocument(String title, String text, MultipartFile file, Integer id) throws DocumentNotFoundException, IOException {
+    public void editDocument(String title, String text, MultipartFile file, Long id) throws DocumentNotFoundException, IOException {
         var document = documentRepository.findById(id);
         if (document.isEmpty()){
             throw new DocumentNotFoundException("Документ не найден");
         }
-        DocumentEntity currentDocument = getOneDocument(id);
+        Document currentDocument = getOneDocument(id);
         if (title != null)
             currentDocument.setTitle(title);
         if (text != null)
             currentDocument.setText(text);
-        if (!file.isEmpty())
-            currentDocument.setFiles(addFile(file));
+        currentDocument.setFiles(addFile(file));
+
         documentRepository.save(currentDocument);
     }
 
