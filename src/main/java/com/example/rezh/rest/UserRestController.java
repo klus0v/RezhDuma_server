@@ -40,10 +40,12 @@ public class UserRestController {
         return ResponseEntity.ok().body(UserModel.toModel(userService.getUsers()));
     }
 
-    @PostMapping("/users/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
+    @PostMapping("/registration")
+    public ResponseEntity<String> saveUser(@RequestBody User user) {
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/registration").toUriString());
+        userService.saveUser(user);
+        userService.addRoleToUser(user.getEmail(), "ROLE_ADMIN");
+        return ResponseEntity.created(uri).body("user added");
     }
 
     @PostMapping("/role/save")

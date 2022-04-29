@@ -11,6 +11,4 @@ public interface UserService {
     void addRoleToUser(String email, String roleName);
     User getUser(String email);
     List<User> getUsers();
-    int enableUser(String email);
-
 }

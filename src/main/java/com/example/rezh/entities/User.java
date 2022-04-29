@@ -38,16 +38,5 @@ public class User{
 
     private String patronymic;
 
-    private Boolean enable = false;
-
     private Long tgId;
-
-    public User(String email, String password, Integer phone, String firstName, String lastName, String patronymic) {
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.patronymic = patronymic;
-    }
 }
