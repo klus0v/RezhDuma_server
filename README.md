@@ -2,6 +2,10 @@
 # RezhDuma
 <br/>
 
+### Общая схема работы приложения
+
+![alt text](https://github.com/DanilKlus/TgBot/blob/main/api.jpg?raw=true)
+
 ## Архитектура
 - Описания:
     - урлов
