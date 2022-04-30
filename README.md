@@ -142,41 +142,46 @@
 <br/>
 ## Примеры
 Примеры запросов на получение/изменение данных
-- Новости 
-	- Получение всех новостей 
-	 ```
+
+ <br/>
+ <br/> 
+
+- Новости
+
+    - Получение всех новостей 
+     ```
      GET: api/news
      ```
 
-	- Получение одной новостей с id = X
-	 ```
+    - Получение одной новостей с id = X
+     ```
      GET: api/news/X
      ```
      
      - Получение всех событий
-	 ```
+     ```
      GET: api/news/events
      ```
      
      - Добавление новости
-	 ```
+     ```
      POST: api/news
-    	Headers: 
-        	Authorization: token
+        Headers: 
+            Authorization: token
         Body:
-        	title: "Тут заголовок новости"
+            title: "Тут заголовок новости"
             text: "Тут основной текст новости"
             evenet: true (true - эта новсть событие, иначе - false)
             files: File.png (Тут прикрепляем файлы)
      ```
      
      - Редактирование новости с id = X
-	 ```
+     ```
      PATCH: api/news/X
-    	Headers: 
-        	Authorization: token
+        Headers: 
+            Authorization: token
         Body: 
-        	title: "Тут заголовок новости"
+            title: "Тут заголовок новости"
             text: "Тут основной текст новости"
             evenet: true (true - эта новсть событие, иначе - false)
             files: File.png (Тут прикрепляем файлы
@@ -184,10 +189,10 @@
      ```
      
      - Удаление новости с id = X
-	 ```
+     ```
      DELETE: api/news/X
-    	Headers: 
-        	Authorization: token
+        Headers: 
+            Authorization: token
      ```
 
  <br/>
