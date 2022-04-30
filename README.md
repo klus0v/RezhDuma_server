@@ -334,50 +334,51 @@
 <br/>
 
 - Вход
-   ```
+  ```
    POST: api/login
       Body: 
           email: "тут почта юзера"
           passwords: "тут пароль"
           
      Ответ на запрос (json): 
-          {
-            "access_token": "тут токен авторизации",
-            "refresh_token": "тут токен обновления"
-          }
-   ```
+      {
+          "access_token": "тут токен авторизации",
+          "refresh_token": "тут токен обновления"
+      }
+  
+  ```
 
 
 <br/>
 <br/>
 
 - Регистрация
- ```
+  ```
      POST: api/registration
     	Body(json): 
-        	{
+          {
               "email" : "почта юзера",
               "password": "его пароль",
               "phone": "номер телефона",
               "firstName": "имя",
               "lastName": "фамилия",
-              "patronymic": "отчество"
-			}	
-```
+              "patronymic": "отчество"  
+          }
+  ```
 
 <br/>
 <br/>
 
 - Обновление токена
-```
+  ```
      GET: api/token/refresh
      	Headers: 
         	Authorization: refresh token
-    	Ответ на запрос (json): 
-        	{
-              "access_token": "тут новый токен авторизации",
-			}	
-```
+    	Ответ на запрос (json):
+          {
+                "access_token": "тут новый токен авторизации"
+          }
+  ```
 
 
 
