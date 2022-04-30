@@ -62,7 +62,7 @@ public class ProjectRestController {
         }
     }
 
-    @PutMapping(value = "{id}")
+    @PatchMapping(value = "{id}")
     public ResponseEntity editProject(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
                                       @RequestParam(required = false) MultipartFile files,

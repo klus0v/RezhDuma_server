@@ -63,7 +63,7 @@ public class HistoryRestController {
         }
     }
 
-    @PutMapping(value = "{id}")
+    @PatchMapping(value = "{id}")
     public ResponseEntity editHistory(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
                                       @RequestParam(required = false) MultipartFile files,

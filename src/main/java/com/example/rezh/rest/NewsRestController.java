@@ -75,7 +75,7 @@ public class NewsRestController {
         }
     }
 
-    @PutMapping(value = "{id}")
+    @PatchMapping(value = "{id}")
     public ResponseEntity editNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
                                    @RequestParam(required = false) Boolean event,
