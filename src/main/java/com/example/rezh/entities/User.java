@@ -43,5 +43,7 @@ public class User{
 
     private String patronymic;
 
+    private Boolean enable = false;
+
     private Long tgId;
 }

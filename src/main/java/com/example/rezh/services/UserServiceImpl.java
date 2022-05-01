@@ -1,9 +1,12 @@
 package com.example.rezh.services;
 
 
+import com.example.rezh.email.EmailSender;
 import com.example.rezh.entities.Role;
 
 import com.example.rezh.entities.User;
+import com.example.rezh.registration.token.ConfirmationToken;
+import com.example.rezh.registration.token.ConfirmationTokenService;
 import com.example.rezh.repositories.RoleRepository;
 import com.example.rezh.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -26,6 +31,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
+    private final EmailSender emailSender;
 
 
     @Override
@@ -41,16 +48,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {authorities.add(new SimpleGrantedAuthority(role.getName()));});
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getEnable(), true, true, true, authorities);
     }
 
     @Override
     @Transactional
-    public User saveUser(User user) {
+    public boolean saveUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()) != null)
+            return false;
         log.info("Save new user {} to the database", user.getFirstName());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-        return user;
+
+        String token = UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                user
+        );
+
+        String link = "http://192.168.0.103:8080/api/registration/confirm?token=" + token;
+        emailSender.send(
+                user.getEmail(), user.getFirstName() + " " + link);
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        return true;
+    }
+
+    public int enableUser(String email) {
+        return userRepository.enableUser(email);
     }
 
     @Override

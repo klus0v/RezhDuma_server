@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.entities.Role;
 import com.example.rezh.entities.User;
+import com.example.rezh.registration.RegistrationService;
 import com.example.rezh.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +36,18 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 public class AuthenticationRestController {
 
     private final UserService userService;
+    private final RegistrationService registrationService;
 
-    @Transactional
+
     @PostMapping("/registration")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/registration").toUriString());
-        userService.saveUser(user);
-        userService.addRoleToUser(user.getEmail(), "USER");
-        return ResponseEntity.created(uri).body("user added");
+        return ResponseEntity.created(uri).body(registrationService.register(user));
+    }
+
+    @GetMapping(path = "/registration/confirm")
+    public String confirm(@RequestParam("token") String token) {
+        return registrationService.confirmToken(token);
     }
 
 
