@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/projects")
@@ -41,7 +43,7 @@ public class ProjectRestController {
     @PostMapping
     public ResponseEntity postProject(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
-                                      @RequestParam(required = false) MultipartFile files) {
+                                      @RequestParam(required = false) ArrayList<MultipartFile> files) {
         try {
             projectService.postProject(title, text, files);
             return ResponseEntity.ok("Проект добавлен");
@@ -65,7 +67,7 @@ public class ProjectRestController {
     @PatchMapping(value = "{id}")
     public ResponseEntity editProject(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
-                                      @RequestParam(required = false) MultipartFile files,
+                                      @RequestParam(required = false) ArrayList<MultipartFile> files,
                                       @PathVariable Long id) {
         try {
             projectService.editProject(title, text, files, id);

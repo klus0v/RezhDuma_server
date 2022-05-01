@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/history")
@@ -17,15 +19,13 @@ public class HistoryRestController {
     @Autowired
     private HistoryService historyService;
 
-
     @GetMapping(value = "{id}")
     public ResponseEntity getOneHistory(@PathVariable Long id) {
         try {
             return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getOneHistory(id)));
         } catch (HistoryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        catch (Exception e ) {
+        } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
@@ -42,7 +42,7 @@ public class HistoryRestController {
     @PostMapping
     public ResponseEntity postHistory(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
-                                      @RequestParam(required = false) MultipartFile files) {
+                                      @RequestParam(required = false) ArrayList<MultipartFile> files) {
         try {
             historyService.postHistory(title, text, files);
             return ResponseEntity.ok("История добавлена");
@@ -66,7 +66,7 @@ public class HistoryRestController {
     @PatchMapping(value = "{id}")
     public ResponseEntity editHistory(@RequestParam(required = false) String title,
                                       @RequestParam(required = false) String text,
-                                      @RequestParam(required = false) MultipartFile files,
+                                      @RequestParam(required = false) ArrayList<MultipartFile> files,
                                       @PathVariable Long id) {
         try {
             historyService.editHistory(title, text, files, id);

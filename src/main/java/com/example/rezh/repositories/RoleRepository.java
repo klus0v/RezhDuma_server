@@ -1,5 +1,6 @@
 package com.example.rezh.repositories;
 
+
 import com.example.rezh.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 

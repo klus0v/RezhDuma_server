@@ -11,8 +11,6 @@ import javax.persistence.GenerationType;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,16 +40,7 @@ public class UserModel {
     public static List<UserModel> toModel(List<User> userEntities) {
         List<UserModel> userModels = new ArrayList<UserModel>();
         for (User userEntity: userEntities ) {
-            UserModel user = new UserModel();
-
-            user.setId(userEntity.getId());
-            user.setEmail(userEntity.getEmail());
-            user.setPhone(userEntity.getPhone());
-            user.setFirstName(userEntity.getFirstName());
-            user.setLastName(userEntity.getLastName());
-            user.setPatronymic(userEntity.getPatronymic());
-
-            userModels.add(user);
+            userModels.add(toModel(userEntity));
         }
         return userModels;
     }

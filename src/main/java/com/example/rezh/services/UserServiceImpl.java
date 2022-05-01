@@ -1,5 +1,6 @@
 package com.example.rezh.services;
 
+
 import com.example.rezh.entities.Role;
 
 import com.example.rezh.entities.User;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -30,16 +31,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
+
         if (user == null) {
             log.error("User {} not found in the database", email);
             throw new UsernameNotFoundException("User not found in the database");
         } else
             log.info("User found in the database: {}", user);
+
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        });
-        System.out.println(authorities);
+        user.getRoles().forEach(role -> {authorities.add(new SimpleGrantedAuthority(role.getName()));});
+
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 
@@ -50,12 +51,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return user;
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        log.info("Save new role {} to the database", role.getName());
-        return roleRepository.save(role);
     }
 
     @Override

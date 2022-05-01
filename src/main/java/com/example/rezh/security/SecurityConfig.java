@@ -1,5 +1,6 @@
 package com.example.rezh.security;
 
+
 import com.example.rezh.filter.CustomAuthenticationFilter;
 import com.example.rezh.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration @EnableWebSecurity @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(bCryptPasswordEncoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
     @Override
@@ -35,12 +35,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
+
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/registration/**").permitAll();
+
         http.authorizeRequests().antMatchers(GET,"/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").permitAll();
-        http.authorizeRequests().antMatchers(DELETE, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(PUT, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers("/api/users/**").hasAuthority("ROLE_SUPER_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(PATCH, "/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/api/users/**").hasAuthority("SUPER_ADMIN");
 
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);

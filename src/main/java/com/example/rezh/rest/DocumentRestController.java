@@ -1,7 +1,7 @@
 package com.example.rezh.rest;
 
 
-
+import com.example.rezh.entities.Document;
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.models.DocumentModel;
 import com.example.rezh.services.DocumentService;
@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/documents")
@@ -17,7 +19,6 @@ public class DocumentRestController {
 
     @Autowired
     private DocumentService documentService;
-
 
     @GetMapping(value = "{id}")
     public ResponseEntity getOneDocument(@PathVariable Long id) {
@@ -42,7 +43,7 @@ public class DocumentRestController {
     @PostMapping
     public ResponseEntity postDocument(@RequestParam(required = false) String title,
                                        @RequestParam(required = false) String text,
-                                       @RequestParam(required = false) MultipartFile files) {
+                                       @RequestParam(required = false) ArrayList<MultipartFile> files) {
         try {
             documentService.postDocument(title, text, files);
             return ResponseEntity.ok("Документ добавлен");
@@ -67,7 +68,7 @@ public class DocumentRestController {
     @PatchMapping(value = "{id}")
     public ResponseEntity editDocument(@RequestParam(required = false) String title,
                                        @RequestParam(required = false) String text,
-                                       @RequestParam(required = false) MultipartFile files,
+                                       @RequestParam(required = false) ArrayList<MultipartFile> files,
                                        @PathVariable Long id) {
         try {
             documentService.editDocument(title, text, files, id);

@@ -1,5 +1,7 @@
 package com.example.rezh.models;
 
+
+import com.example.rezh.entities.AllFiles;
 import com.example.rezh.entities.History;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class HistoryModel {
     private Long id;
     private String title;
     private String text;
-    private String files;
+    private ArrayList<String> filesNames;
     private LocalDateTime historyDate;
 
 
@@ -27,8 +28,13 @@ public class HistoryModel {
         history.setId(historyEntity.getId());
         history.setTitle(historyEntity.getTitle());
         history.setText(historyEntity.getText());
-        history.setFiles(historyEntity.getFiles());
         history.setHistoryDate(historyEntity.getHistoryDate());
+        history.setFilesNames(new ArrayList<>());
+
+        var files = historyEntity.getFiles();
+        for (AllFiles file : files) {
+            history.filesNames.add(file.getFileName());
+        }
 
         return history;
     }
@@ -36,15 +42,7 @@ public class HistoryModel {
     public static List<HistoryModel> toModel(Iterable<History> historyEntities) {
         List<HistoryModel> historyModels = new ArrayList<>();
         for (History historyEntity: historyEntities ) {
-            HistoryModel history = new HistoryModel();
-
-            history.setId(historyEntity.getId());
-            history.setTitle(historyEntity.getTitle());
-            history.setText(historyEntity.getText());
-            history.setFiles(historyEntity.getFiles());
-            history.setHistoryDate(historyEntity.getHistoryDate());
-
-            historyModels.add(history);
+            historyModels.add(toModel(historyEntity));
         }
         return historyModels;
     }

@@ -1,5 +1,7 @@
 package com.example.rezh.services;
 
+
+import com.example.rezh.entities.AllFiles;
 import com.example.rezh.entities.History;
 import com.example.rezh.exceptions.HistoryNotFoundException;
 import com.example.rezh.repositories.HistoryRepository;
@@ -10,8 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
-
 
 @Service
 public class HistoryService {
@@ -22,67 +25,62 @@ public class HistoryService {
     @Value("${upload.path}")
     private String uploadPath;
 
-
     public History getOneHistory(Long id) throws HistoryNotFoundException {
-        var history = historyRepository.findById(id);
-        if (history.isEmpty()){
+        if (historyRepository.findById(id).isEmpty())
             throw new HistoryNotFoundException("История не найдена");
-        }
 
-        return history.get();
+        return historyRepository.getById(id);
     }
 
     public Iterable<History> getAllHistory(){
         return historyRepository.findAll();
     }
 
-    public History postHistory(String title, String text, MultipartFile file) throws IOException {
+    public void postHistory(String title, String text, ArrayList<MultipartFile> files) throws IOException {
         History history = new History();
-
         history.setTitle(title);
         history.setText(text);
-        history.setFiles(addFile(file));
-
-        return historyRepository.save(history);
+        addFiles(files, history);
+        historyRepository.save(history);
     }
 
-    public Long deleteHistory(Long id) throws HistoryNotFoundException {
-        var history = historyRepository.findById(id);
-        if (history.isEmpty()){
+    public void deleteHistory(Long id) throws HistoryNotFoundException {
+        if (historyRepository.findById(id).isEmpty())
             throw new HistoryNotFoundException("История не найдена");
-        }
+
         historyRepository.deleteById(id);
-        return id;
     }
 
-    public void editHistory(String title, String text, MultipartFile file, Long id) throws HistoryNotFoundException, IOException {
-        var history = historyRepository.findById(id);
-        if (history.isEmpty()){
+    public void editHistory(String title, String text, ArrayList<MultipartFile> files, Long id) throws HistoryNotFoundException, IOException {
+        if (historyRepository.findById(id).isEmpty())
             throw new HistoryNotFoundException("История не найдена");
-        }
+
         History currentHistory = getOneHistory(id);
         if (title != null)
             currentHistory.setTitle(title);
         if (text != null)
             currentHistory.setText(text);
-        currentHistory.setFiles(addFile(file));
+        if (files != null)
+            addFiles(files, currentHistory);
 
         historyRepository.save(currentHistory);
     }
 
+    private void addFiles(ArrayList<MultipartFile> files, History history) throws IOException {
 
-    private String addFile(MultipartFile file) throws IOException {
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDirectory = new File(uploadPath);
-            if (!uploadDirectory.exists())
-                uploadDirectory.mkdir();
+        for (MultipartFile file : files) {
+            if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
 
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-            file.transferTo(new File(uploadPath + "/" + resultFileName));
-            return (uploadPath + "/" + resultFileName);
+                file.transferTo(new File(uploadPath + "/" + resultFileName));
+
+                AllFiles historyFile = new AllFiles();
+                historyFile.setFileName(uploadPath + "/" + resultFileName);
+                historyFile.setHistory(history);
+                history.addFile(historyFile);
+            }
         }
-        return null;
     }
 }

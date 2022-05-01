@@ -1,6 +1,8 @@
 package com.example.rezh.services;
 
+import com.example.rezh.entities.AllFiles;
 import com.example.rezh.entities.Project;
+import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.exceptions.ProjectNotFoundException;
 import com.example.rezh.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -22,67 +26,63 @@ public class ProjectService {
     @Value("${upload.path}")
     private String uploadPath;
 
-
     public Project getOneProject(Long id) throws ProjectNotFoundException {
-        var project = projectRepository.findById(id);
-        if (project.isEmpty()){
+        if (projectRepository.findById(id).isEmpty())
             throw new ProjectNotFoundException("Проект не найден");
-        }
-        return project.get();
+
+        return projectRepository.getById(id);
     }
 
     public Iterable<Project> getAllProjects(){
         return projectRepository.findAll();
     }
 
-    public Project postProject(String title, String text, MultipartFile file) throws IOException {
+    public void postProject(String title, String text, ArrayList<MultipartFile> files) throws IOException {
         Project project = new Project();
-
         project.setTitle(title);
         project.setText(text);
-        project.setFiles(addFile(file));
-
-        return projectRepository.save(project);
+        addFiles(files, project);
+        projectRepository.save(project);
     }
 
-    public Long deleteProject(Long id) throws ProjectNotFoundException {
-        var project = projectRepository.findById(id);
-        if (project.isEmpty()){
+    public void deleteProject(Long id) throws ProjectNotFoundException {
+        if (projectRepository.findById(id).isEmpty())
             throw new ProjectNotFoundException("Проект не найден");
-        }
+
         projectRepository.deleteById(id);
-        return id;
     }
 
-    public void editProject(String title, String text, MultipartFile file, Long id) throws ProjectNotFoundException, IOException {
-        var project = projectRepository.findById(id);
-        if (project.isEmpty()){
+    public void editProject(String title, String text, ArrayList<MultipartFile> files, Long id) throws ProjectNotFoundException, IOException {
+
+        if (projectRepository.findById(id).isEmpty())
             throw new ProjectNotFoundException("Проект не найден");
-        }
+
         Project currentProject = getOneProject(id);
         if (title != null)
             currentProject.setTitle(title);
         if (text != null)
             currentProject.setText(text);
-        currentProject.setFiles(addFile(file));
+        if (files != null)
+            addFiles(files, currentProject);
 
         projectRepository.save(currentProject);
     }
 
+    private void addFiles(ArrayList<MultipartFile> files, Project project) throws IOException {
 
+        for (MultipartFile file : files) {
+            if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
 
-    private String addFile(MultipartFile file) throws IOException {
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDirectory = new File(uploadPath);
-            if (!uploadDirectory.exists())
-                uploadDirectory.mkdir();
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-            String uuidFile = UUID.randomUUID().toString();
-            String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                file.transferTo(new File(uploadPath + "/" + resultFileName));
 
-            file.transferTo(new File(uploadPath + "/" + resultFileName));
-            return (uploadPath + "/" + resultFileName);
+                AllFiles projectFile = new AllFiles();
+                projectFile.setFileName(uploadPath + "/" + resultFileName);
+                projectFile.setProjects(project);
+                project.addFile(projectFile);
+            }
         }
-        return null;
     }
 }

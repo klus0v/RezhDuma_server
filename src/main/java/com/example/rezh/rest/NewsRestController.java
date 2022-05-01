@@ -1,7 +1,6 @@
 package com.example.rezh.rest;
 
 
-
 import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.models.NewsModel;
 import com.example.rezh.services.NewsService;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 
 @RestController
 @CrossOrigin
@@ -53,8 +53,8 @@ public class NewsRestController {
     @PostMapping
     public ResponseEntity postNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
-                                   @RequestParam(required = false) Boolean event,
-                                   @RequestParam(required = false) MultipartFile files) {
+                                   @RequestParam(required = false, defaultValue = "0") Boolean event,
+                                   @RequestParam(required = false) ArrayList<MultipartFile> files) {
         try {
             newsService.postNews(title, text, event, files);
             return ResponseEntity.ok("Новость добавлена");
@@ -78,8 +78,8 @@ public class NewsRestController {
     @PatchMapping(value = "{id}")
     public ResponseEntity editNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
-                                   @RequestParam(required = false) Boolean event,
-                                   @RequestParam(required = false) MultipartFile files,
+                                   @RequestParam(required = false, defaultValue = "0") Boolean event,
+                                   @RequestParam(required = false) ArrayList<MultipartFile> files,
                                    @PathVariable Long id) {
         try {
             newsService.editNews(title, text, event, files, id);
