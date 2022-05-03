@@ -23,27 +23,18 @@ public class AllFiles {
     private News news;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Project projects;
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private History history;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Document documents;
+    private Document document;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Appeal appeal;
 
     public AllFiles(String fileName) {
         this.fileName = fileName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AllFiles)) return false;
-        return id != null && id.equals(((AllFiles) o).getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }
