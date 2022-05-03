@@ -36,13 +36,7 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
-    public void postDocument(String title, String text, ArrayList<MultipartFile> files) throws IOException {
-        Document document = new Document();
-        document.setTitle(title);
-        document.setText(text);
-        addFiles(files, document);
-        documentRepository.save(document);
-    }
+
 
     public void deleteDocument(Long id) throws DocumentNotFoundException{
         if (documentRepository.findById(id).isEmpty())
@@ -66,6 +60,14 @@ public class DocumentService {
         documentRepository.save(currentDocument);
     }
 
+    public void postDocument(String title, String text, ArrayList<MultipartFile> files) throws IOException {
+        Document document = new Document();
+        document.setTitle(title);
+        document.setText(text);
+        addFiles(files, document);
+        documentRepository.save(document);
+    }
+
     private void addFiles(ArrayList<MultipartFile> files, Document document) throws IOException {
 
         for (MultipartFile file : files) {
@@ -78,7 +80,7 @@ public class DocumentService {
 
                 AllFiles documentFile = new AllFiles();
                 documentFile.setFileName(uploadPath + "/" + resultFileName);
-                documentFile.setDocuments(document);
+                documentFile.setDocument(document);
                 document.addFile(documentFile);
             }
         }

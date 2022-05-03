@@ -30,10 +30,10 @@ public class RegistrationService {
 
         boolean info = userService.saveUser(user);
         if (!info)
-            return "Пользователь с такой почтой уже есть";
+            throw new IllegalStateException("Пользователь с такой почтой уже есть");
         userService.addRoleToUser(user.getEmail(), "USER");
 
-        return "Пользователь заргестрирован";
+        return "Пользователь заргестрирован, для входа подтвердите почту";
     }
 
 

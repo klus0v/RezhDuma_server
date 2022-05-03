@@ -71,15 +71,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         String link = "http://192.168.0.103:8080/api/registration/confirm?token=" + token;
         emailSender.send(
-                user.getEmail(), user.getFirstName() + " " + link);
+                user.getEmail(), user.getFirstName() + ", для подтверждения почты, передите поссылке: " + link);
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
         return true;
     }
 
-    public int enableUser(String email) {
-        return userRepository.enableUser(email);
+    public void enableUser(String email) {
+        userRepository.enableUser(email);
     }
 
     @Override
@@ -99,6 +99,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> getUsers() {
         log.info("Fetching all user");
+        return userRepository.findAll();
+    }
+
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 }

@@ -29,17 +29,18 @@ public class News {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    private Boolean event;
+
+
+    @DateTimeFormat()
+    private LocalDateTime newsDate = LocalDateTime.now();
+
     @OneToMany(
             mappedBy = "news",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<AllFiles> files = new ArrayList<AllFiles>();
-
-    private Boolean event;
-
-    @DateTimeFormat()
-    private LocalDateTime newsDate = LocalDateTime.now();
 
     public void addFile(AllFiles file) {
         files.add(file);

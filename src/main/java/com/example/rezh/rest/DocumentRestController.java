@@ -1,7 +1,6 @@
 package com.example.rezh.rest;
 
 
-import com.example.rezh.entities.Document;
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.models.DocumentModel;
 import com.example.rezh.services.DocumentService;

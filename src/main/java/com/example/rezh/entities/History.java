@@ -28,15 +28,15 @@ public class History {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    @DateTimeFormat()
+    private LocalDateTime historyDate = LocalDateTime.now();
+
     @OneToMany(
             mappedBy = "history",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<AllFiles> files = new ArrayList<AllFiles>();
-
-    @DateTimeFormat()
-    private LocalDateTime historyDate = LocalDateTime.now();
 
     public void addFile(AllFiles file) {
         files.add(file);

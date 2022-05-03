@@ -31,10 +31,16 @@ public class NewsRestController {
         }
     }
 
+
+
     @GetMapping
-    public ResponseEntity getAllNews() {
+    public ResponseEntity getNewsPagination(@RequestParam(required = false) Long page,
+                                            @RequestParam(required = false) Long count) {
         try {
-            return ResponseEntity.ok(NewsModel.toModel(newsService.getAllNews()));
+            if (page == null || count == null)
+                return ResponseEntity.ok(NewsModel.toModel(newsService.getAllNews()));
+
+            return ResponseEntity.ok(NewsModel.toModel(newsService.getNewsPagination(page, count)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

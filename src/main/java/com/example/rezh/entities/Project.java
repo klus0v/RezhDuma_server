@@ -27,24 +27,24 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    @DateTimeFormat()
+    private LocalDateTime projectDate = LocalDateTime.now();
+
     @OneToMany(
-            mappedBy = "projects",
+            mappedBy = "project",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<AllFiles> files = new ArrayList<AllFiles>();
 
-    @DateTimeFormat()
-    private LocalDateTime projectDate = LocalDateTime.now();
-
     public void addFile(AllFiles file) {
         files.add(file);
-        file.setProjects(this);
+        file.setProject(this);
     }
 
     public void removeFile(AllFiles file) {
         files.remove(file);
-        file.setProjects(null);
+        file.setProject(null);
     }
 
 }

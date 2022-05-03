@@ -1,24 +1,22 @@
 package com.example.rezh.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import static javax.persistence.FetchType.EAGER;
 
-@Data
+@Getter
+@Setter
 @Entity
-@EqualsAndHashCode
+@DynamicInsert
+@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
@@ -46,4 +44,23 @@ public class User{
     private Boolean enable = false;
 
     private Long tgId;
+
+
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Appeal> appeals = new ArrayList<>();
+
+    public void addAppeal(Appeal appeal) {
+        appeals.add(appeal);
+        appeal.setUser(this);
+    }
+
+    public void removeAppeal(Appeal appeal) {
+        appeals.remove(appeal);
+        appeal.setUser(null);
+    }
 }

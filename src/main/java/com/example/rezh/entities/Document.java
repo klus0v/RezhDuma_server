@@ -27,24 +27,25 @@ public class Document {
     @Column(columnDefinition = "TEXT")
     private String text;
 
+    @DateTimeFormat()
+    private LocalDateTime documentDate = LocalDateTime.now();
+
+
     @OneToMany(
-            mappedBy = "documents",
+            mappedBy = "document",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<AllFiles> files = new ArrayList<AllFiles>();
 
-    @DateTimeFormat()
-    private LocalDateTime documentDate = LocalDateTime.now();
-
     public void addFile(AllFiles file) {
         files.add(file);
-        file.setDocuments(this);
+        file.setDocument(this);
     }
 
     public void removeFile(AllFiles file) {
         files.remove(file);
-        file.setDocuments(null);
+        file.setDocument(null);
     }
 
 }

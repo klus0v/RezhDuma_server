@@ -80,7 +80,7 @@ public class ProjectService {
 
                 AllFiles projectFile = new AllFiles();
                 projectFile.setFileName(uploadPath + "/" + resultFileName);
-                projectFile.setProjects(project);
+                projectFile.setProject(project);
                 project.addFile(projectFile);
             }
         }

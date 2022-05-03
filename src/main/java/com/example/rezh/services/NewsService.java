@@ -12,9 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class NewsService {
@@ -32,6 +30,18 @@ public class NewsService {
         return newsRepository.getById(id);
     }
 
+    public List<News> getNewsPagination(Long page, Long count) throws NewsNotFoundException {
+
+        List<News> news = new ArrayList<>();
+        for (Long i = (page-1)*count+1; i <=page*count  ; i++) {
+            if (newsRepository.findById(i).isPresent()) {
+                news.add(newsRepository.getById(i));
+            }
+
+        }
+        return news;
+    }
+
     public Iterable<News> getAllNews(){
         return newsRepository.findAll();
     }
@@ -45,7 +55,8 @@ public class NewsService {
         news.setTitle(title);
         news.setText(text);
         news.setEvent(event);
-        addFiles(files, news);
+        if (files != null)
+            addFiles(files, news);
         newsRepository.save(news);
     }
 
