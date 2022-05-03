@@ -7,10 +7,14 @@
 ![alt text](https://github.com/DanilKlus/TgBot/blob/main/api.jpg?raw=true)
 
 ## Архитектура
+1. Новости и прочее
+2. Регистрация, логин
+3. Обращения
+
 - Описания:
-    - урлов
-    - методов
-    - запросов
+  - урлов
+  - методов
+  - запросов
 - Примеры
   <br/>
   <br/>
@@ -145,7 +149,50 @@
 <br/>
 <br/>
 
-## Примеры  
+
+
+
+
+
+|  3. обращения |
+| ------ |
+`X - id пользователя`                  
+`Y - id обращения`
+>  Доступно всем  
+>  `GET:` `api/appeals/popular` Получения частых вопросов
+
+> Доступно жителю                   
+>`GET:` `api/appeals/user/X`  Получение всех свох обращений
+>`GET:` `api/appeals/user/X?answered=true`  Получение свох рассмотренных обращений  
+>`GET:` `api/appeals/user/X?answered=false`  Получение свох не рассмотренных обращений  
+>`DELETE:` `api/appeals/user/X?appeal=Y` Удалить свое обращение  
+>`POST:` `api/appeals/user/X` Добавить обращение  
+>`PATCH:` `api/appeals/user/X?appeal=Y` Отредактировать свое обращение
+>
+
+>  Доступно депутату   
+>  `GET:` `api/appeals/admin/Y` Получить одно обращение  
+>  `GET:` `api/appeals/admin` Получить все обращения  
+>  `GET:` `api/appeals/admin?type=ТИП&topic=СФЕРА&district=РАЙОН` Получить обращения с фильтрами (парметры не обязательны, можно использовать любую комбинацию параметров)  
+>  `PATCH:` `api/appeals/admin/Y`  Ответить на это обращение
+
+
+>
+| тип|формат тела запроса|формат тела ответа|заголовок запроса|
+| ------             | ------    | ------       | ------                     |
+| GET(для частых вопросов)| -         | JSON         |-                           |
+| GET                | -         | JSON         |Authorization: token        |
+| DELETE             | -         | -            |Authorization: token        |
+| POST               | form-data | -            |Authorization: token        |
+| PATCH              | form-data | -            |Authorization: token        |
+
+<br/>  
+<br/>
+<br/>
+
+
+
+## Примеры
 
 Примеры запросов на получение/изменение данных
 
@@ -153,22 +200,22 @@
 
 - Новости
 
-    - Получение всех новостей 
+  - Получение всех новостей
      ```
      GET: api/news
      ```
 
-    - Получение одной новостей с id = X
+  - Получение одной новостей с id = X
      ```
      GET: api/news/X
      ```
-     
-     - Получение всех событий
+
+  - Получение всех событий
      ```
      GET: api/news/events
      ```
-     
-     - Добавление новости
+
+  - Добавление новости
      ```
      POST: api/news
         Headers: 
@@ -179,8 +226,8 @@
             evenet: true (true - эта новсть событие, иначе - false)
             files: File.png (Тут прикрепляем файлы)
      ```
-     
-     - Редактирование новости с id = X
+
+  - Редактирование новости с id = X
      ```
      PATCH: api/news/X
         Headers: 
@@ -192,8 +239,8 @@
             files: File.png (Тут прикрепляем файлы
         (Поля не обязательны(можно поменть только title, например, и только его и отправить))
      ```
-     
-     - Удаление новости с id = X
+
+  - Удаление новости с id = X
      ```
      DELETE: api/news/X
         Headers: 
@@ -204,17 +251,17 @@
  <br/> 
 
 - История
-    - Получение всех историй
+  - Получение всех историй
    ```
    GET: api/history
    ```
 
-    - Получение одной истории с id = X
+  - Получение одной истории с id = X
    ```
    GET: api/history/X
    ```
 
-    - Добавление истории
+  - Добавление истории
    ```
    POST: api/history
       Headers: 
@@ -225,7 +272,7 @@
           files: File.png (Тут прикрепляем файлы)
    ```
 
-    - Редактирование истории с id = X
+  - Редактирование истории с id = X
    ```
    PATCH: api/history/X
       Headers: 
@@ -237,7 +284,7 @@
       (Поля не обязательны(можно поменть только title, например, и только его и отправить))
    ```
 
-    - Удаление истории с id = X
+  - Удаление истории с id = X
    ```
    DELETE: api/history/X
       Headers: 
@@ -249,17 +296,17 @@
  <br/> 
 
 - Проекты
-    - Получение всех проектов
+  - Получение всех проектов
    ```
    GET: api/projects
    ```
 
-    - Получение одного проекта с id = X
+  - Получение одного проекта с id = X
    ```
    GET: api/projects/X
    ```
 
-    - Добавление проекта
+  - Добавление проекта
    ```
    POST: api/projects
       Headers: 
@@ -270,7 +317,7 @@
           files: File.png (Тут прикрепляем файлы)
    ```
 
-    - Редактирование проекта с id = X
+  - Редактирование проекта с id = X
    ```
    PATCH: api/projects/X
       Headers: 
@@ -282,7 +329,7 @@
       (Поля не обязательны(можно поменть только title, например, и только его и отправить))
    ```
 
-    - Удаление проекта с id = X
+  - Удаление проекта с id = X
    ```
    DELETE: api/projects/X
       Headers: 
@@ -294,17 +341,17 @@
  <br/> 
 
 - Документы
-    - Получение всех документов
+  - Получение всех документов
    ```
    GET: api/documents
    ```
 
-    - Получение одного документа с id = X
+  - Получение одного документа с id = X
    ```
    GET: api/documents/X
    ```
 
-    - Добавление документа
+  - Добавление документа
    ```
    POST: api/documents
       Headers: 
@@ -315,7 +362,7 @@
           files: File.png (Тут прикрепляем файлы)
    ```
 
-    - Редактирование документа с id = X
+  - Редактирование документа с id = X
    ```
    PATCH: api/documents/X
       Headers: 
@@ -327,7 +374,7 @@
       (Поля не обязательны(можно поменть только title, например, и только его и отправить))
    ```
 
-    - Удаление документа с id = X
+  - Удаление документа с id = X
    ```
    DELETE: api/documents/X
       Headers: 
@@ -386,17 +433,84 @@
 <br/>
 
 - Пример токена отправки токена
-  
-    Headers:
-      Authorization:
-          `Rezh "token"`  
+
+  Headers:
+  Authorization:
+  `Rezh "token"`
 
   (при каждом запросе перед токеном добавлять:  
   "Rezh ")
-  
-  
 
-  
+
+
+<br/>
+- Обращения
+
+- Доступно всем 
+   ```
+   GET: api/appeals/popular
+   ```
+
+- Доступно жителям  (без тела запроса)
+   ```
+        [ везде: Headers: Authorization: 'Rezh {token}' ]
+     
+     GET: api/appeals/user/X
+     GET: api/appeals/user/X?answered=true
+     GET: api/appeals/user/X?answered=false
+     DELETE: api/appeals/user/X?appeal=Y
+   ```
+- Доступно жителям  (тело запроса form-data) 
+   ```
+   POST: api/appeals/user/X
+     
+   Headers: 
+       Authorization: 'Rezh {token}'
+     
+   тело запроса (form-data):
+       type: "тип обращения(вопрос, жалоба и прочее)"
+      district: "район"
+      topic: "сфера обращения"
+      text: "сам текст обращения"
+      files: файлы(можно несколько)
+   ```
+
+   ```
+   PATCH: api/appeals/user/X?appeal=Y
+     
+   appeal = id обращения
+     
+   Headers: 
+       Authorization: 'Rezh {token}'
+     
+   тело запроса (form-data):
+       type: "тип обращения(вопрос, жалоба и прочее)"
+      district: "район"
+      topic: "сфера обращения"
+      text: "сам текст обращения"
+      files: файлы(можно несколько)
+   ```
+
+- Доступно депутату  (без тела запроса)
+   ```
+        [ везде: Headers: Authorization: 'Rezh {token}' ]
+     
+     GET: api/appeals/admin/Y
+     GET: api/appeals/admin
+     GET: api/appeals/admin?type=ТИП&topic=СФЕРА&district=РАЙОН
+   ```
+- Доступно депутату  (тело запроса form-data) 
+   ```
+   PATCH: api/appeals/admin/Y
+     
+   Headers: 
+       Authorization: 'Rezh {token}'
+     
+   тело запроса (form-data):
+       id: id депутата (который отвечает на обращение)
+      response: "текст ответа"
+      frequent: true/false (флажок для отметки вопроса как частый)
+   ```
 
 
 
