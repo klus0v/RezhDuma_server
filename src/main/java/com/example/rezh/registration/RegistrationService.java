@@ -1,7 +1,6 @@
 package com.example.rezh.registration;
 
 
-import com.example.rezh.email.EmailSender;
 import com.example.rezh.entities.User;
 import com.example.rezh.registration.token.ConfirmationToken;
 import com.example.rezh.registration.token.ConfirmationTokenService;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class RegistrationService {
 

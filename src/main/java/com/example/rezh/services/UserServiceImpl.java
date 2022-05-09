@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 user
         );
 
-        String link = "http://192.168.0.103:8080/api/registration/confirm?token=" + token;
+        String link = "http://localhost:8080/api/registration/confirm?token=" + token;
         emailSender.send(
                 user.getEmail(), user.getFirstName() + ", для подтверждения почты, передите поссылке: " + link);
 

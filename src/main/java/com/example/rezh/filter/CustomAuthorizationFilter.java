@@ -28,14 +28,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Slf4j
-@CrossOrigin
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals("/api/login")
                 || request.getServletPath().equals("/api/token/refresh")
-                || request.getServletPath().equals("/api/registration")
-                || request.getServletPath().equals("/api/appeals")) {
+                || request.getServletPath().equals("/api/registration")) {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);

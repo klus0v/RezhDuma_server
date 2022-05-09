@@ -1,6 +1,7 @@
 package com.example.rezh.models;
 
 
+import com.example.rezh.entities.Role;
 import com.example.rezh.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class UserModel {
     private String firstName;
     private String lastName;
     private String patronymic;
+    private List<String> roles;
 
 
     public static UserModel toModel(User userEntity) {
@@ -33,12 +35,17 @@ public class UserModel {
         user.setFirstName(userEntity.getFirstName());
         user.setLastName(userEntity.getLastName());
         user.setPatronymic(userEntity.getPatronymic());
+        List<String> roles = new ArrayList<String>();
+        for (Role role : userEntity.getRoles()) {
+            roles.add(role.getName());
+        }
+        user.setRoles(roles);
 
         return user;
     }
 
     public static List<UserModel> toModel(List<User> userEntities) {
-        List<UserModel> userModels = new ArrayList<UserModel>();
+        List<UserModel> userModels = new ArrayList<>();
         for (User userEntity: userEntities ) {
             userModels.add(toModel(userEntity));
         }

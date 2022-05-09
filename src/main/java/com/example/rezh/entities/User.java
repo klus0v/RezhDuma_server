@@ -1,5 +1,6 @@
 package com.example.rezh.entities;
 
+import com.example.rezh.entities.votes.Vote;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @Setter
@@ -63,4 +65,7 @@ public class User{
         appeals.remove(appeal);
         appeal.setUser(null);
     }
+
+    @ManyToMany(fetch = LAZY)
+    private Collection<Vote> votes = new ArrayList<>();
 }

@@ -7,6 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.entities.Role;
 import com.example.rezh.entities.User;
+import com.example.rezh.models.UserModel;
 import com.example.rezh.registration.RegistrationService;
 import com.example.rezh.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,19 +19,15 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthenticationRestController {
@@ -53,6 +50,7 @@ public class AuthenticationRestController {
 
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Rezh ")) {
             try {
@@ -69,10 +67,13 @@ public class AuthenticationRestController {
                         .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                         .sign(algorithm);
 
+                List<Object> answer = new ArrayList<>();
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
+                answer.add(tokens);
+                answer.add(UserModel.toModel(user));
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+                new ObjectMapper().writeValue(response.getOutputStream(), answer);
             } catch (Exception exception) {
                 response.setHeader("error", exception.getMessage());
                 response.setStatus(FORBIDDEN.value());
