@@ -84,11 +84,11 @@ public class VoteService {
 
 
     @Transactional
-    public void putVoice(Long id, Long votingId, Long[] answers) {
+    public void putVoice(Long id, Long ballotId, Long[] answers) {
 
 
         User user = userRepository.getById(id);
-        Vote voting = voteRepository.getById(votingId);
+        Vote voting = voteRepository.getById(ballotId);
 
         if (user.getVotes().contains(voting))
             return;

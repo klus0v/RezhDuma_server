@@ -66,12 +66,12 @@ public class VoteRestController {
     }
 
     //users
-    @PatchMapping(value = "/user/{id}", params = {"voting"})
+    @PatchMapping(value = "/user/{id}", params = {"ballot"})
     public ResponseEntity putVoice(@PathVariable Long id,
-                                   @RequestParam Long voting,
+                                   @RequestParam Long ballot,
                                    @RequestBody Long[] answers) {
         try {
-            voteService.putVoice(id, voting, answers);
+            voteService.putVoice(id, ballot, answers);
             return ResponseEntity.ok("Ответ сохранен");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
