@@ -15,6 +15,8 @@
 1. Новости и прочее
 2. Регистрация, логин
 3. Обращения
+4. Голосования
+5. Поиск по сайту
 
 - Описания:
   - урлов
@@ -38,11 +40,13 @@
 >
 > `X - id текущей новости`
 >
->`GET:` `api/news`   Получение всех новостей (любой)
+>`GET:` `api/news`   Получение всех новостей (любой)  
+>[page= count=] + параметры для пагинации
 >
 >`GET:` `api/news/X`   Получение одной новости (любой)
 >
->`GET:` `api/news/events`   Получение всех событий (любой)
+>`GET:` `api/news/events`   Получение всех событий (любой)  
+>[page= count=] + параметры для пагинации
 >
 >`POST:` `api/news`  Добавление новости (только депутат)
 >
@@ -63,7 +67,8 @@
 >
 > `X - id текущей истории`
 >
->`GET:` `api/history`   Получение всех историй (любой)
+>`GET:` `api/history`   Получение всех историй (любой)  
+>[page= count=] + параметры для пагинации
 >
 >`GET:` `api/history/X`   Получение одной истории (любой)
 >
@@ -85,7 +90,8 @@
 >
 > `X - id текущего документа`
 >
->`GET:` `api/documents`   Получение всех документов(любой)
+>`GET:` `api/documents`   Получение всех документов(любой)  
+>[page= count=] + параметры для пагинации
 >
 >`GET:` `api/documents/X`   Получение документа (любой)
 >
@@ -107,7 +113,8 @@
 >
 > `X - id текущего проекта`
 >
->`GET:` `api/projects`   Получение всех проектов(любой)
+>`GET:` `api/projects`   Получение всех проектов(любой)  
+>[page= count=] + параметры для пагинации
 >
 >`GET:` `api/projects/X`   Получение проекта (любой)
 >
@@ -147,9 +154,9 @@
 >
 | тип|формат тела запроса|формат тела ответа|заголовок запроса|
 | ------             | ------    | ------       | ------                     |
-| Вход               | form-data | JSON(tokens) |-                           |
+| Вход               | form-data | JSON(tokens, user info) |-                           |
 | Регистрация        | JSON      | -            |-                           |
-| Обновление токена  | -         |JSON(token)   |Authorization: refresh token|
+| Обновление токена  | -         |JSON(token, user info)   |Authorization: refresh token|
 <br/>  
 <br/>
 <br/>
@@ -195,6 +202,56 @@
 <br/>
 <br/>
 
+
+
+
+|  4. голосования/опросы |
+| ------ |
+>  Доступно всем  
+>  `GET:` `api/ballots/X` Получить голосование/опрос с id = X  
+>  `GET:` `api/ballots/votes` Получить все голосования  
+>  `GET:` `api/ballots/surveys` Получить все опросы
+
+> Доступно жителю                   
+>`PATCH:` `api/ballots/user/Y?ballot=X` Ответить на голосование/опрос с id=X, Y-id юзера
+>
+
+>  Доступно депутату   
+>  `POST:` `api/ballots/admin` Создать опрос/голосование  
+>  `DELETE:` `api/ballots/admin/X`  Удалить голосование/опрос c id=X
+
+
+>
+| тип|формат тела запроса|формат тела ответа|заголовок запроса|
+| ------             | ------    | ------       | ------                     |
+| GET                | -         | JSON         |-        |
+| PATCH              | JSON | -            |Authorization: token        |
+| POST               | JSON | -            |Authorization: token        |
+| DELETE             | -         | -            |Authorization: token        |
+
+
+<br/>  
+<br/>
+<br/>
+
+
+|  5. поиск |
+| ------ |
+
+>`GET:` `api/search?find=X` Поиск по сайту, X - то, что нужно найти  
+>Доп. параметры:  
+>news=true, projects=true, documents=true, history=true, appeals=true, ballots=true  
+>(они не обязательны, можно их комбинировать для фильтрации поиска)
+
+
+| тип|формат тела запроса|формат тела ответа|заголовок запроса|
+| ------             | ------    | ------       | ------                     |
+| GET                | -         | JSON         |-        |
+
+
+<br/>  
+<br/>
+<br/>
 
 
 ## Примеры
@@ -447,11 +504,13 @@
   "Rezh ")
 
 
-
+<br/>
 <br/>
 - Обращения
 
-- Доступно всем 
+<br/>
+
+- Доступно всем
    ```
    GET: api/appeals/popular
    ```
@@ -465,7 +524,7 @@
      GET: api/appeals/user/X?answered=false
      DELETE: api/appeals/user/X?appeal=Y
    ```
-- Доступно жителям  (тело запроса form-data) 
+- Доступно жителям  (тело запроса form-data)
    ```
    POST: api/appeals/user/X
      
@@ -504,7 +563,7 @@
      GET: api/appeals/admin
      GET: api/appeals/admin?type=ТИП&topic=СФЕРА&district=РАЙОН
    ```
-- Доступно депутату  (тело запроса form-data) 
+- Доступно депутату  (тело запроса form-data)
    ```
    PATCH: api/appeals/admin/Y
      
@@ -516,6 +575,97 @@
       response: "текст ответа"
       frequent: true/false (флажок для отметки вопроса как частый)
    ```
+
+- Голосования/опросы
+
+<br/>
+
+- Доступно всем
+   ```
+   GET: api/ballots/X  
+   GET: api/ballots/votes
+   GET: api/ballots/surveys
+   ```
+
+- Доступно жителям
+   ```
+   PATCH: api/ballots/user/Y?ballot=X
+   
+   Y - id юзера
+   ballot=X, параметр, где X - id опроса/голосования
+     
+   Headers: 
+       Authorization: 'Rezh {token}'
+     
+   тело запроса (JSON):
+   [id1, id2, id3]
+   	(массив с id ответов за которые проголосовал житель)
+       
+   ```
+
+
+
+- Доступно депутату  (без тела запроса)
+   ```
+     DELETE: api/ballots/admin/Y
+     Y - id опроса/голосования
+     
+     Headers: Authorization: 'Rezh {token}'
+   ```
+- Доступно депутату  (тело запроса JSON)
+   ```
+   POST: api/ballots/admin
+     
+   Headers: 
+       Authorization: 'Rezh {token}'
+     
+   тело запроса (JSON):
+     
+  	{
+      "topic": "Тема опроса",
+      "survey": true,
+      "questions": [
+          {
+              "question": "Вопрос 1",
+              "answers": [
+                  {
+                      "answer": "ответ к нему"
+                  },
+                  {
+                      "answer": "и еще ответ к нему"
+                  }
+              ]
+          },
+          {
+              "question": "Вопрос 2",
+              "answers": [
+                  {
+                      "answer": "ответ на вопрос 2"
+                  }
+              ]
+          }
+      ]
+	}
+     
+   ```
+
+- Поиск
+  ```
+     POST: api/search?news=true&appeals=true&ballots=true&find=что-нибудь
+     
+     Пример поиска по новостям, обращениям и голосованиям/опросам
+     
+     Вернет Json, с массивами всех найденных объектов
+    	
+  ```
+
+<br/>
+<br/>
+
+
+
+
+
 
 
 
