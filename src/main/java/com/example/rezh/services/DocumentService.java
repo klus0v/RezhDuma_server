@@ -1,29 +1,31 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.Document;
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.repositories.DocumentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
 public class DocumentService {
 
-    @Autowired
-    private DocumentRepository documentRepository;
+    private final DocumentRepository documentRepository;
 
     @Value("${upload.path}")
     private String uploadPath;
+
+    public DocumentService(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
 
     public Document getOneDocument(Long id) throws DocumentNotFoundException {
         if (documentRepository.findById(id).isEmpty())
@@ -32,11 +34,20 @@ public class DocumentService {
         return documentRepository.getById(id);
     }
 
-    public Iterable<Document> getAllDocuments(){
-        return documentRepository.findAll();
+    public List<Document> getDocumentsPagination(Integer page, Integer count) {
+        List<Document> documents = getAllDocuments();
+        List<Document> currentDocuments = new ArrayList<>();
+        for (int i = (page-1)*count; i <=page*count; i++) {
+            if (i > documents.size() - 1)
+                break;
+            currentDocuments.add(documents.get(i));
+        }
+        return currentDocuments;
     }
 
-
+    public List<Document> getAllDocuments(){
+        return documentRepository.findAll();
+    }
 
     public void deleteDocument(Long id) throws DocumentNotFoundException{
         if (documentRepository.findById(id).isEmpty())
@@ -64,7 +75,8 @@ public class DocumentService {
         Document document = new Document();
         document.setTitle(title);
         document.setText(text);
-        addFiles(files, document);
+        if (files != null)
+            addFiles(files, document);
         documentRepository.save(document);
     }
 
@@ -76,9 +88,9 @@ public class DocumentService {
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-                file.transferTo(new File(uploadPath + "/" + resultFileName));
+                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
-                AllFiles documentFile = new AllFiles();
+                File documentFile = new File();
                 documentFile.setFileName(uploadPath + "/" + resultFileName);
                 documentFile.setDocument(document);
                 document.addFile(documentFile);

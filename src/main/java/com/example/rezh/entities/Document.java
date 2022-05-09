@@ -36,14 +36,14 @@ public class Document {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<AllFiles> files = new ArrayList<AllFiles>();
+    private List<File> files = new ArrayList<File>();
 
-    public void addFile(AllFiles file) {
+    public void addFile(File file) {
         files.add(file);
         file.setDocument(this);
     }
 
-    public void removeFile(AllFiles file) {
+    public void removeFile(File file) {
         files.remove(file);
         file.setDocument(null);
     }

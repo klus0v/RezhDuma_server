@@ -1,7 +1,7 @@
 package com.example.rezh.models;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.Document;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,14 +32,14 @@ public class DocumentModel {
         document.setFilesNames(new ArrayList<>());
 
         var files = documentEntity.getFiles();
-        for (AllFiles file : files) {
+        for (File file : files) {
             document.filesNames.add(file.getFileName());
         }
 
         return document;
     }
 
-    public static List<DocumentModel> toModel(Iterable<Document> documentEntities) {
+    public static List<DocumentModel> toModel(List<Document> documentEntities) {
         List<DocumentModel> documentModels = new ArrayList<DocumentModel>();
         for (Document documentEntity: documentEntities ) {
             documentModels.add(toModel(documentEntity));

@@ -1,7 +1,7 @@
 package com.example.rezh.models;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.History;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,14 +32,14 @@ public class HistoryModel {
         history.setFilesNames(new ArrayList<>());
 
         var files = historyEntity.getFiles();
-        for (AllFiles file : files) {
+        for (File file : files) {
             history.filesNames.add(file.getFileName());
         }
 
         return history;
     }
 
-    public static List<HistoryModel> toModel(Iterable<History> historyEntities) {
+    public static List<HistoryModel> toModel(List<History> historyEntities) {
         List<HistoryModel> historyModels = new ArrayList<>();
         for (History historyEntity: historyEntities ) {
             historyModels.add(toModel(historyEntity));

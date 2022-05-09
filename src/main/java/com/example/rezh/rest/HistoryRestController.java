@@ -2,6 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.exceptions.HistoryNotFoundException;
+import com.example.rezh.models.DocumentModel;
 import com.example.rezh.models.HistoryModel;
 import com.example.rezh.services.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/history")
 public class HistoryRestController {
 
@@ -31,9 +31,12 @@ public class HistoryRestController {
     }
 
     @GetMapping
-    public ResponseEntity getAllHistory() {
+    public ResponseEntity getAllHistory(@RequestParam(required = false) Integer page,
+                                        @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getAllHistory()));
+            if (page == null || count == null)
+                return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getAllHistory()));
+            return ResponseEntity.ok(HistoryModel.toModel(historyService.getHistoryPagination(page, count)));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

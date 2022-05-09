@@ -2,16 +2,13 @@ package com.example.rezh.entities;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.implementation.bind.annotation.Default;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Data
 @Entity
@@ -40,14 +37,14 @@ public class News {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<AllFiles> files = new ArrayList<AllFiles>();
+    private List<File> files = new ArrayList<>();
 
-    public void addFile(AllFiles file) {
+    public void addFile(File file) {
         files.add(file);
         file.setNews(this);
     }
 
-    public void removeFile(AllFiles file) {
+    public void removeFile(File file) {
         files.remove(file);
         file.setNews(null);
     }

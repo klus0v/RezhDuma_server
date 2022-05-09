@@ -4,7 +4,7 @@ package com.example.rezh.rest;
 import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.models.NewsModel;
 import com.example.rezh.services.NewsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,12 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin
+@AllArgsConstructor
 @RequestMapping("/api/news")
 public class NewsRestController {
 
-    @Autowired
-    private NewsService newsService;
+    private final NewsService newsService;
 
 
     @GetMapping(value = "{id}")
@@ -31,15 +30,12 @@ public class NewsRestController {
         }
     }
 
-
-
     @GetMapping
-    public ResponseEntity getNewsPagination(@RequestParam(required = false) Long page,
-                                            @RequestParam(required = false) Long count) {
+    public ResponseEntity getNews(@RequestParam(required = false) Integer page,
+                                  @RequestParam(required = false) Integer count) {
         try {
             if (page == null || count == null)
                 return ResponseEntity.ok(NewsModel.toModel(newsService.getAllNews()));
-
             return ResponseEntity.ok(NewsModel.toModel(newsService.getNewsPagination(page, count)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -48,16 +44,19 @@ public class NewsRestController {
 
     @GetMapping
     @RequestMapping("/events")
-    public ResponseEntity getAllEvents() {
+    public ResponseEntity getEvents(@RequestParam(required = false) Integer page,
+                                    @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(NewsModel.toModel(newsService.getEvents()));
+            if (page == null || count == null)
+                return ResponseEntity.ok().body(NewsModel.toModel(newsService.getAllEvents()));
+            return ResponseEntity.ok(NewsModel.toModel(newsService.getEventsPagination(page, count)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
     @PostMapping
-    public ResponseEntity postNews(@RequestParam(required = false) String title,
+    public ResponseEntity<String> postNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
                                    @RequestParam(required = false, defaultValue = "0") Boolean event,
                                    @RequestParam(required = false) ArrayList<MultipartFile> files) {
@@ -70,7 +69,7 @@ public class NewsRestController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteNews(@PathVariable Long id) {
+    public ResponseEntity<String> deleteNews(@PathVariable Long id) {
         try {
             newsService.deleteNews(id);
             return ResponseEntity.ok("Новость " + id + " удалена");
@@ -82,7 +81,7 @@ public class NewsRestController {
     }
 
     @PatchMapping(value = "{id}")
-    public ResponseEntity editNews(@RequestParam(required = false) String title,
+    public ResponseEntity<String> editNews(@RequestParam(required = false) String title,
                                    @RequestParam(required = false) String text,
                                    @RequestParam(required = false, defaultValue = "0") Boolean event,
                                    @RequestParam(required = false) ArrayList<MultipartFile> files,

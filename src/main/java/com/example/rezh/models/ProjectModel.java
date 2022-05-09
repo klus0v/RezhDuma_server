@@ -1,7 +1,7 @@
 package com.example.rezh.models;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.Project;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,14 +32,14 @@ public class ProjectModel {
         project.setFilesNames(new ArrayList<>());
 
         var files = projectEntity.getFiles();
-        for (AllFiles file : files) {
+        for (File file : files) {
             project.filesNames.add(file.getFileName());
         }
 
         return project;
     }
 
-    public static List<ProjectModel> toModel(Iterable<Project> projectEntities) {
+    public static List<ProjectModel> toModel(List<Project> projectEntities) {
         List<ProjectModel> projectModels = new ArrayList<ProjectModel>();
         for (Project projectEntity: projectEntities ) {
             projectModels.add(toModel(projectEntity));

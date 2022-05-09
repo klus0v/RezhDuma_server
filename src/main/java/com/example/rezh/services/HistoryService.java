@@ -1,29 +1,31 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.History;
 import com.example.rezh.exceptions.HistoryNotFoundException;
 import com.example.rezh.repositories.HistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Service
 public class HistoryService {
 
-    @Autowired
-    private HistoryRepository historyRepository;
+    private final HistoryRepository historyRepository;
 
     @Value("${upload.path}")
     private String uploadPath;
+
+    public HistoryService(HistoryRepository historyRepository) {
+        this.historyRepository = historyRepository;
+    }
 
     public History getOneHistory(Long id) throws HistoryNotFoundException {
         if (historyRepository.findById(id).isEmpty())
@@ -32,7 +34,18 @@ public class HistoryService {
         return historyRepository.getById(id);
     }
 
-    public Iterable<History> getAllHistory(){
+    public List<History> getHistoryPagination(Integer page, Integer count) {
+        List<History> history = getAllHistory();
+        List<History> currentHistory = new ArrayList<>();
+        for (int i = (page-1)*count; i <=page*count; i++) {
+            if (i > history.size() - 1)
+                break;
+            currentHistory.add(history.get(i));
+        }
+        return currentHistory;
+    }
+
+    public List<History> getAllHistory(){
         return historyRepository.findAll();
     }
 
@@ -40,7 +53,8 @@ public class HistoryService {
         History history = new History();
         history.setTitle(title);
         history.setText(text);
-        addFiles(files, history);
+        if (files != null)
+            addFiles(files, history);
         historyRepository.save(history);
     }
 
@@ -74,9 +88,9 @@ public class HistoryService {
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-                file.transferTo(new File(uploadPath + "/" + resultFileName));
+                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
-                AllFiles historyFile = new AllFiles();
+                File historyFile = new File();
                 historyFile.setFileName(uploadPath + "/" + resultFileName);
                 historyFile.setHistory(history);
                 history.addFile(historyFile);

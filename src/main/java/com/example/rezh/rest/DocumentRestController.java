@@ -3,7 +3,9 @@ package com.example.rezh.rest;
 
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.models.DocumentModel;
+import com.example.rezh.models.NewsModel;
 import com.example.rezh.services.DocumentService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin
+@AllArgsConstructor
 @RequestMapping("/api/documents")
 public class DocumentRestController {
 
-    @Autowired
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
     @GetMapping(value = "{id}")
     public ResponseEntity getOneDocument(@PathVariable Long id) {
@@ -31,16 +32,19 @@ public class DocumentRestController {
     }
 
     @GetMapping
-    public ResponseEntity getAllDocuments() {
+    public ResponseEntity getDocuments(@RequestParam(required = false) Integer page,
+                                       @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(DocumentModel.toModel(documentService.getAllDocuments()));
-        } catch (Exception e ) {
+            if (page == null || count == null)
+                return ResponseEntity.ok(DocumentModel.toModel(documentService.getAllDocuments()));
+            return ResponseEntity.ok(DocumentModel.toModel(documentService.getDocumentsPagination(page, count)));
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
     @PostMapping
-    public ResponseEntity postDocument(@RequestParam(required = false) String title,
+    public ResponseEntity<String> postDocument(@RequestParam(required = false) String title,
                                        @RequestParam(required = false) String text,
                                        @RequestParam(required = false) ArrayList<MultipartFile> files) {
         try {
@@ -52,7 +56,7 @@ public class DocumentRestController {
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteDocument(@PathVariable Long id) {
+    public ResponseEntity<String> deleteDocument(@PathVariable Long id) {
         try {
             documentService.deleteDocument(id);
             return ResponseEntity.ok("Документ " + id + " удален");
@@ -65,7 +69,7 @@ public class DocumentRestController {
     }
 
     @PatchMapping(value = "{id}")
-    public ResponseEntity editDocument(@RequestParam(required = false) String title,
+    public ResponseEntity<String> editDocument(@RequestParam(required = false) String title,
                                        @RequestParam(required = false) String text,
                                        @RequestParam(required = false) ArrayList<MultipartFile> files,
                                        @PathVariable Long id) {

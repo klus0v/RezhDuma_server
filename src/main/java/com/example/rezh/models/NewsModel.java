@@ -2,7 +2,7 @@ package com.example.rezh.models;
 
 
 import com.example.rezh.entities.News;
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,14 +32,14 @@ public class NewsModel {
         news.setFilesNames(new ArrayList<>());
 
         var files = newsEntity.getFiles();
-        for (AllFiles file : files) {
+        for (File file : files) {
             news.filesNames.add(file.getFileName());
         }
 
         return news;
     }
 
-    public static List<NewsModel> toModel(Iterable<News> newsEntities) {
+    public static List<NewsModel> toModel(List<News> newsEntities) {
         List<NewsModel> newsModels = new ArrayList<>();
         for (News newsEntity: newsEntities ) {
             newsModels.add(toModel(newsEntity));

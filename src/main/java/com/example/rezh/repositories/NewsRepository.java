@@ -2,9 +2,21 @@ package com.example.rezh.repositories;
 
 
 import com.example.rezh.entities.News;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface NewsRepository extends CrudRepository<News, Long> {
-    Iterable<News> findAllByEvent(Boolean True);
+import java.util.List;
+
+public interface NewsRepository extends JpaRepository<News, Long> {
+
+    @Query("Select c from News c where c.event = true order by c.id desc")
+    List<News> findAllByEvent();
+
+    @Query("Select c from News c order by c.id desc")
+    List<News> findAll();
+
     News getById(Long id);
+
+    @Query("Select c from News c where c.title like %:title% or c.text like %:text%")
+    List<News> findAllByTitleContainingOrTextContaining(String title, String text);
 }

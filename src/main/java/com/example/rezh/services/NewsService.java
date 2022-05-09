@@ -2,26 +2,27 @@ package com.example.rezh.services;
 
 
 import com.example.rezh.entities.News;
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.repositories.NewsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 @Service
 public class NewsService {
 
-    @Autowired
-    private NewsRepository newsRepository;
+    private final NewsRepository newsRepository;
 
     @Value("${upload.path}")
     private String uploadPath;
+
+    public NewsService(NewsRepository newsRepository) {
+        this.newsRepository = newsRepository;
+    }
 
     public News getOneNews(Long id) throws NewsNotFoundException {
         if (newsRepository.findById(id).isEmpty())
@@ -30,24 +31,35 @@ public class NewsService {
         return newsRepository.getById(id);
     }
 
-    public List<News> getNewsPagination(Long page, Long count) throws NewsNotFoundException {
+    public List<News> getNewsPagination(Integer page, Integer count) {
 
-        List<News> news = new ArrayList<>();
-        for (Long i = (page-1)*count+1; i <=page*count  ; i++) {
-            if (newsRepository.findById(i).isPresent()) {
-                news.add(newsRepository.getById(i));
-            }
-
+        List<News> news = getAllNews();
+        List<News> currentNews = new ArrayList<>();
+        for (int i = (page-1)*count; i <=page*count; i++) {
+            if (i > news.size() - 1)
+                break;
+            currentNews.add(news.get(i));
         }
-        return news;
+        return currentNews;
     }
 
-    public Iterable<News> getAllNews(){
+    public List<News> getEventsPagination(Integer page, Integer count) {
+        List<News> news = getAllEvents();
+        List<News> currentEvents = new ArrayList<>();
+        for (int i = (page-1)*count; i <=page*count  ; i++) {
+            if (i > news.size()-1)
+                break;
+            currentEvents.add(news.get(i));
+        }
+        return currentEvents;
+    }
+
+    public List<News> getAllNews(){
         return newsRepository.findAll();
     }
 
-    public Iterable<News> getEvents() {
-        return newsRepository.findAllByEvent(true);
+    public List<News> getAllEvents() {
+        return newsRepository.findAllByEvent();
     }
 
     public void postNews(String title, String text, Boolean event, ArrayList<MultipartFile> files) throws IOException {
@@ -92,14 +104,16 @@ public class NewsService {
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-                file.transferTo(new File(uploadPath + "/" + resultFileName));
+                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
-                AllFiles newsFile = new AllFiles();
+                File newsFile = new File();
                 newsFile.setFileName(uploadPath + "/" + resultFileName);
                 newsFile.setNews(news);
                 news.addFile(newsFile);
             }
         }
     }
+
+
 }
 

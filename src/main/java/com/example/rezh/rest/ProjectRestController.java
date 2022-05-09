@@ -1,6 +1,7 @@
 package com.example.rezh.rest;
 
 import com.example.rezh.exceptions.ProjectNotFoundException;
+import com.example.rezh.models.HistoryModel;
 import com.example.rezh.models.ProjectModel;
 import com.example.rezh.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/projects")
 public class ProjectRestController {
 
@@ -32,9 +32,12 @@ public class ProjectRestController {
     }
 
     @GetMapping
-    public ResponseEntity getAllProjects() {
+    public ResponseEntity getAllProjects(@RequestParam(required = false) Integer page,
+                                         @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(ProjectModel.toModel(projectService.getAllProjects()));
+            if (page == null || count == null)
+                return ResponseEntity.ok().body(ProjectModel.toModel(projectService.getAllProjects()));
+            return ResponseEntity.ok(ProjectModel.toModel(projectService.getProjectsPagination(page, count)));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
