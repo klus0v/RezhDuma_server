@@ -5,26 +5,23 @@ import com.example.rezh.entities.File;
 import com.example.rezh.entities.Document;
 import com.example.rezh.exceptions.DocumentNotFoundException;
 import com.example.rezh.repositories.DocumentRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final FileStore fileStore;
 
-    @Value("${upload.path}")
-    private String uploadPath;
-
-    public DocumentService(DocumentRepository documentRepository) {
+    @Autowired
+    public DocumentService(DocumentRepository documentRepository, FileStore fileStore) {
         this.documentRepository = documentRepository;
+        this.fileStore = fileStore;
     }
 
     public Document getOneDocument(Long id) throws DocumentNotFoundException {
@@ -71,7 +68,7 @@ public class DocumentService {
         documentRepository.save(currentDocument);
     }
 
-    public void postDocument(String title, String text, ArrayList<MultipartFile> files) throws IOException {
+    public void postDocument(String title, String text, ArrayList<MultipartFile> files) {
         Document document = new Document();
         document.setTitle(title);
         document.setText(text);
@@ -80,21 +77,33 @@ public class DocumentService {
         documentRepository.save(document);
     }
 
-    private void addFiles(ArrayList<MultipartFile> files, Document document) throws IOException {
+    private void addFiles(ArrayList<MultipartFile> files, Document document) {
 
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
+                Map<String, String> metadata = extractMetadata(file);
+                String path = "rezh3545";
+                String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                try {
+                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
 
-                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
                 File documentFile = new File();
-                documentFile.setFileName(uploadPath + "/" + resultFileName);
+                documentFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
                 documentFile.setDocument(document);
                 document.addFile(documentFile);
             }
         }
+    }
+
+    private Map<String, String> extractMetadata(MultipartFile file) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", file.getContentType());
+        metadata.put("Content-Length", String.valueOf(file.getSize()));
+        return metadata;
     }
 }

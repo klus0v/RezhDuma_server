@@ -5,23 +5,27 @@ import com.example.rezh.entities.News;
 import com.example.rezh.entities.File;
 import com.example.rezh.exceptions.NewsNotFoundException;
 import com.example.rezh.repositories.NewsRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
 
+
 @Service
 public class NewsService {
 
     private final NewsRepository newsRepository;
+    private final FileStore fileStore;
 
-    @Value("${upload.path}")
-    private String uploadPath;
 
-    public NewsService(NewsRepository newsRepository) {
+
+
+    @Autowired
+    public NewsService(NewsRepository newsRepository, FileStore fileStore) {
         this.newsRepository = newsRepository;
+        this.fileStore = fileStore;
     }
 
     public News getOneNews(Long id) throws NewsNotFoundException {
@@ -62,7 +66,7 @@ public class NewsService {
         return newsRepository.findAllByEvent();
     }
 
-    public void postNews(String title, String text, Boolean event, ArrayList<MultipartFile> files) throws IOException {
+    public void postNews(String title, String text, Boolean event, ArrayList<MultipartFile> files) {
         News news = new News();
         news.setTitle(title);
         news.setText(text);
@@ -79,7 +83,7 @@ public class NewsService {
         newsRepository.deleteById(id);
     }
 
-    public void editNews(String title, String text, Boolean event, ArrayList<MultipartFile> files, Long id) throws NewsNotFoundException, IOException {
+    public void editNews(String title, String text, Boolean event, ArrayList<MultipartFile> files, Long id) throws NewsNotFoundException {
 
         if (newsRepository.findById(id).isEmpty())
             throw new NewsNotFoundException("Новость не найдена");
@@ -96,23 +100,36 @@ public class NewsService {
         newsRepository.save(currentNews);
     }
 
-    private void addFiles(ArrayList<MultipartFile> files, News news) throws IOException {
+    private void addFiles(ArrayList<MultipartFile> files, News news)  {
 
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
+                Map<String, String> metadata = extractMetadata(file);
+                String path = "rezh3545";
+                String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                try {
+                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
 
-                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
                 File newsFile = new File();
-                newsFile.setFileName(uploadPath + "/" + resultFileName);
+                newsFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
                 newsFile.setNews(news);
                 news.addFile(newsFile);
             }
         }
     }
+
+    private Map<String, String> extractMetadata(MultipartFile file) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", file.getContentType());
+        metadata.put("Content-Length", String.valueOf(file.getSize()));
+        return metadata;
+    }
+
 
 
 }

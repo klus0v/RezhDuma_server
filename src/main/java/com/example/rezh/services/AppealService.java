@@ -8,6 +8,7 @@ import com.example.rezh.repositories.AppealRepository;
 import com.example.rezh.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,21 +17,16 @@ import javax.naming.AuthenticationException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class AppealService {
 
-    @Value("${upload.path}")
-    private String uploadPath;
-
     private final AppealRepository appealRepository;
     private final UserRepository userRepository;
     private final UserServiceImpl userService;
+    @Autowired
+    private final FileStore fileStore;
 
 
     public List<Appeal> getFrequents() {
@@ -109,18 +105,30 @@ public class AppealService {
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
 
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                Map<String, String> metadata = extractMetadata(file);
+                String path = "rezh3545";
+                String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
+                try {
+                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
 
 
                 File appealFile = new File();
-                appealFile.setFileName(uploadPath + "/" + resultFileName);
+                appealFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
                 appealFile.setAppeal(appeal);
                 appeal.addFile(appealFile);
             }
         }
+    }
+
+    private Map<String, String> extractMetadata(MultipartFile file) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", file.getContentType());
+        metadata.put("Content-Length", String.valueOf(file.getSize()));
+        return metadata;
     }
 
     public Appeal getAppeal(Long appealID) {

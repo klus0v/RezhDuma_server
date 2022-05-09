@@ -1,31 +1,28 @@
 package com.example.rezh.services;
 
 import com.example.rezh.entities.File;
-import com.example.rezh.entities.History;
 import com.example.rezh.entities.Project;
 import com.example.rezh.exceptions.ProjectNotFoundException;
 import com.example.rezh.repositories.ProjectRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final FileStore fileStore;
 
-    @Value("${upload.path}")
-    private String uploadPath;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    @Autowired
+    public ProjectService(ProjectRepository projectRepository, FileStore fileStore) {
         this.projectRepository = projectRepository;
+        this.fileStore = fileStore;
     }
 
     public Project getOneProject(Long id) throws ProjectNotFoundException {
@@ -86,19 +83,29 @@ public class ProjectService {
 
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
+                Map<String, String> metadata = extractMetadata(file);
+                String path = "rezh3545";
+                String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-                String uuidFile = UUID.randomUUID().toString();
-                String resultFileName = uuidFile + "." + file.getOriginalFilename();
+                try {
+                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
 
-                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
                 File projectFile = new File();
-                projectFile.setFileName(uploadPath + "/" + resultFileName);
+                projectFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
                 projectFile.setProject(project);
                 project.addFile(projectFile);
             }
         }
     }
 
-
+    private Map<String, String> extractMetadata(MultipartFile file) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", file.getContentType());
+        metadata.put("Content-Length", String.valueOf(file.getSize()));
+        return metadata;
+    }
 }
