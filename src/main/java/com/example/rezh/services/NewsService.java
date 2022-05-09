@@ -35,7 +35,7 @@ public class NewsService {
 
         List<News> news = getAllNews();
         List<News> currentNews = new ArrayList<>();
-        for (int i = (page-1)*count; i <=page*count; i++) {
+        for (int i = (page-1)*count; i < page*count; i++) {
             if (i > news.size() - 1)
                 break;
             currentNews.add(news.get(i));
@@ -46,7 +46,7 @@ public class NewsService {
     public List<News> getEventsPagination(Integer page, Integer count) {
         List<News> news = getAllEvents();
         List<News> currentEvents = new ArrayList<>();
-        for (int i = (page-1)*count; i <=page*count  ; i++) {
+        for (int i = (page-1)*count; i < page*count  ; i++) {
             if (i > news.size()-1)
                 break;
             currentEvents.add(news.get(i));

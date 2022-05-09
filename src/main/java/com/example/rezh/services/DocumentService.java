@@ -37,7 +37,7 @@ public class DocumentService {
     public List<Document> getDocumentsPagination(Integer page, Integer count) {
         List<Document> documents = getAllDocuments();
         List<Document> currentDocuments = new ArrayList<>();
-        for (int i = (page-1)*count; i <=page*count; i++) {
+        for (int i = (page-1)*count; i < page*count; i++) {
             if (i > documents.size() - 1)
                 break;
             currentDocuments.add(documents.get(i));

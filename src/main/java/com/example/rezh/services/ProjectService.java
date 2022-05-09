@@ -38,7 +38,7 @@ public class ProjectService {
     public List<Project> getProjectsPagination(Integer page, Integer count) {
         List<Project> projects = getAllProjects();
         List<Project> currentProjects = new ArrayList<>();
-        for (int i = (page-1)*count; i <=page*count; i++) {
+        for (int i = (page-1)*count; i < page*count; i++) {
             if (i > projects.size() - 1)
                 break;
             currentProjects.add(projects.get(i));

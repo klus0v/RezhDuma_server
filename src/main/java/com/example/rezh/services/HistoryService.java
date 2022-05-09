@@ -37,7 +37,7 @@ public class HistoryService {
     public List<History> getHistoryPagination(Integer page, Integer count) {
         List<History> history = getAllHistory();
         List<History> currentHistory = new ArrayList<>();
-        for (int i = (page-1)*count; i <=page*count; i++) {
+        for (int i = (page-1)*count; i < page*count; i++) {
             if (i > history.size() - 1)
                 break;
             currentHistory.add(history.get(i));
