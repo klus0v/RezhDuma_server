@@ -2,7 +2,9 @@ package com.example.rezh.repositories;
 
 
 import com.example.rezh.entities.Appeal;
+import com.example.rezh.entities.News;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -28,4 +30,10 @@ public interface AppealRepository extends JpaRepository<Appeal, Long> {
     List<Appeal> findAllByTopicTag(String topicTag);
 
     List<Appeal> findAllByDistrictTag(String districtTag);
+
+
+
+
+    @Query("Select c from Appeal c where c.text like %:text% and c.frequent = true or c.response like %:response% and c.frequent = true")
+    List<Appeal> findAllByTextContainingOrResponseContaining(String text, String response);
 }

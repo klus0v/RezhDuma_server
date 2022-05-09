@@ -1,5 +1,6 @@
 package com.example.rezh.email;
 
+
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class EmailService implements EmailSender{
                     new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setText(email, true);
             helper.setTo(to);
-            helper.setSubject("Confirm your email");
+            helper.setSubject("Подтвердите вашу почту");
             helper.setFrom("djfrorjam@gmail.com");
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {

@@ -1,7 +1,7 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
 import com.example.rezh.entities.User;
 import com.example.rezh.repositories.AppealRepository;
@@ -14,9 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.AuthenticationException;
 import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -52,7 +50,7 @@ public class AppealService {
     }
 
     public void deleteAppeal(Long id, String token, Long appealID) throws AuthenticationException {
-        if (!CheckUser(id, token))
+        if (!CheckUser(id, token) || !Objects.equals(appealRepository.findById(appealID).get().getUser().getId(), id))
             throw new AuthenticationException("Нет прав");
         appealRepository.deleteById(appealID);
     }
@@ -79,7 +77,7 @@ public class AppealService {
 
     public void editAppeal(Long id, String token, Long appealID, String type, String district, String topic, String text, ArrayList<MultipartFile> files) throws IOException, AuthenticationException {
 
-        if (!CheckUser(id, token))
+        if (!CheckUser(id, token) || !Objects.equals(appealRepository.findById(appealID).get().getUser().getId(), id))
             throw new AuthenticationException("Нет прав");
 
         Appeal appeal = appealRepository.getById(appealID);
@@ -114,10 +112,10 @@ public class AppealService {
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFileName = uuidFile + "." + file.getOriginalFilename();
 
-                file.transferTo(new File(uploadPath + "/" + resultFileName));
+                file.transferTo(new java.io.File(uploadPath + "/" + resultFileName));
 
 
-                AllFiles appealFile = new AllFiles();
+                File appealFile = new File();
                 appealFile.setFileName(uploadPath + "/" + resultFileName);
                 appealFile.setAppeal(appeal);
                 appeal.addFile(appealFile);

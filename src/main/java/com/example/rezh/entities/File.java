@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "all_files")
-public class AllFiles {
+public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +34,7 @@ public class AllFiles {
     @ManyToOne(fetch = FetchType.LAZY)
     private Appeal appeal;
 
-    public AllFiles(String fileName) {
+    public File(String fileName) {
         this.fileName = fileName;
     }
 }

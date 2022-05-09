@@ -36,7 +36,7 @@ public class Appeal {
 
     private String response;
 
-    private Boolean frequent;
+    private Boolean frequent = false;
 
     @DateTimeFormat()
     private LocalDateTime responseDate;
@@ -50,14 +50,14 @@ public class Appeal {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<AllFiles> files = new ArrayList<>();
+    private List<File> files = new ArrayList<>();
 
-    public void addFile(AllFiles file) {
+    public void addFile(File file) {
         files.add(file);
         file.setAppeal(this);
     }
 
-    public void removeFile(AllFiles file) {
+    public void removeFile(File file) {
         files.remove(file);
         file.setAppeal(null);
     }

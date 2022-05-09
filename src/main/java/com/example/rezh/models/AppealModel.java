@@ -1,7 +1,7 @@
 package com.example.rezh.models;
 
 
-import com.example.rezh.entities.AllFiles;
+import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +36,7 @@ public class AppealModel {
         appeal.setFilesNames(new ArrayList<>());
 
         var files = appealEntity.getFiles();
-        for (AllFiles file : files) {
+        for (File file : files) {
             appeal.filesNames.add(file.getFileName());
         }
 
@@ -44,7 +44,7 @@ public class AppealModel {
     }
 
     public static List<AppealModel> toModel(List<Appeal> appealEntities) {
-        List<AppealModel> appealModels = new ArrayList<AppealModel>();
+        List<AppealModel> appealModels = new ArrayList<>();
         for (Appeal appealEntity: appealEntities ) {
             appealModels.add(toModel(appealEntity));
         }
