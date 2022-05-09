@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/appeals")
 @AllArgsConstructor
 public class AppealRestController {

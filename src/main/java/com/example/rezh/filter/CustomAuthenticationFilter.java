@@ -5,9 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.example.rezh.models.UserModel;
 import com.example.rezh.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
+@CrossOrigin
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
@@ -42,7 +42,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        response.addHeader("Access-Control-Allow-Origin", "localhost");
+        response.addHeader("Access-Control-Allow-Origin", "*");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         log.info("Email: {}", email); log.info("Password: {}", password);

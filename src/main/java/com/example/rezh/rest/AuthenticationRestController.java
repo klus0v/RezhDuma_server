@@ -28,6 +28,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthenticationRestController {

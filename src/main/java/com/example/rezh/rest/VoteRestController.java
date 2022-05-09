@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@CrossOrigin
 @AllArgsConstructor
 @RequestMapping("/api/ballots")
 public class VoteRestController {

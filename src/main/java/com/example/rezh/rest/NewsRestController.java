@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin
 @AllArgsConstructor
 @RequestMapping("/api/news")
 public class NewsRestController {

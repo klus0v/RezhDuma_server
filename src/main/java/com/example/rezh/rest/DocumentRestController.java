@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin
 @AllArgsConstructor
 @RequestMapping("/api/documents")
 public class DocumentRestController {

@@ -1,4 +1,4 @@
-package com.example.rezh.security;
+package com.example.rezh.config.security;
 
 
 import com.example.rezh.filter.CustomAuthenticationFilter;
