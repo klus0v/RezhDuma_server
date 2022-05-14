@@ -2,8 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.entities.Appeal;
-import com.example.rezh.filter.models.AppealModel;
-import com.example.rezh.filter.models.NewsModel;
+import com.example.rezh.models.AppealModel;
 import com.example.rezh.services.AppealService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -2,6 +2,7 @@ package com.example.rezh.services;
 
 
 import com.example.rezh.filter.models.*;
+import com.example.rezh.models.*;
 import com.example.rezh.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

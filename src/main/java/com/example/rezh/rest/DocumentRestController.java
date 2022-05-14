@@ -2,7 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.exceptions.DocumentNotFoundException;
-import com.example.rezh.filter.models.DocumentModel;
+import com.example.rezh.models.DocumentModel;
 import com.example.rezh.services.DocumentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

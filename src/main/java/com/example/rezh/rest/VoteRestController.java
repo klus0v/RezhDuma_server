@@ -2,7 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.entities.votes.Vote;
-import com.example.rezh.filter.models.VoteModel;
+import com.example.rezh.models.VoteModel;
 import com.example.rezh.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,7 @@ package com.example.rezh.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.rezh.filter.models.UserModel;
+import com.example.rezh.models.UserModel;
 import com.example.rezh.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

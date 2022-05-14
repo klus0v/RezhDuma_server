@@ -7,7 +7,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.entities.Role;
 import com.example.rezh.entities.User;
-import com.example.rezh.filter.models.UserModel;
+import com.example.rezh.models.UserModel;
 import com.example.rezh.registration.RegistrationService;
 import com.example.rezh.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
