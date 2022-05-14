@@ -2,7 +2,21 @@
 # RezhDuma
 <br/>
 
-`После запуска, в БД в талблицу roles добавить поля: "USER", "ADMIN"`
+
+##### Сайт на хостинге:
+
+
+*[API](http://51.250.111.89:8080):* `http://51.250.111.89:8080`  
+*[сайт](http://rezh.ml):* `http://rezh.ml`
+
+  <br/>
+
+##### Локальный запуск:
+
+[Актуальные сборки сервера](https://drive.google.com/drive/folders/1mtPKIPZuP1ubZwE24QjZr1A3uuzA7kiZ?usp=sharing)
+
+`После запуска, в БД в талблицу roles добавить поля: "USER", "ADMIN"`  
+`Роль "ADMIN" к пользователю добавляется вручную через БД`
 
 <br/>
 <br/>
@@ -171,12 +185,16 @@
 `X - id пользователя`                  
 `Y - id обращения`
 >  Доступно всем  
->  `GET:` `api/appeals/popular` Получения частых вопросов
+>  `GET:` `api/appeals/popular` Получения частых вопросов  
+>  [page= count=] + параметры для пагинации
 
 > Доступно жителю                   
->`GET:` `api/appeals/user/X`  Получение всех свох обращений
->`GET:` `api/appeals/user/X?answered=true`  Получение свох рассмотренных обращений  
+>`GET:` `api/appeals/user/X`  Получение всех свох обращений  
+>[page= count=] + параметры для пагинации  
+>`GET:` `api/appeals/user/X?answered=true`  Получение свох рассмотренных обращений    
+>[page= count=] + параметры для пагинации  
 >`GET:` `api/appeals/user/X?answered=false`  Получение свох не рассмотренных обращений  
+>[page= count=] + параметры для пагинации  
 >`DELETE:` `api/appeals/user/X?appeal=Y` Удалить свое обращение  
 >`POST:` `api/appeals/user/X` Добавить обращение  
 >`PATCH:` `api/appeals/user/X?appeal=Y` Отредактировать свое обращение
@@ -185,7 +203,10 @@
 >  Доступно депутату   
 >  `GET:` `api/appeals/admin/Y` Получить одно обращение  
 >  `GET:` `api/appeals/admin` Получить все обращения  
->  `GET:` `api/appeals/admin?type=ТИП&topic=СФЕРА&district=РАЙОН` Получить обращения с фильтрами (парметры не обязательны, можно использовать любую комбинацию параметров)  
+>  [page= count=] + параметры для пагинации  
+>  `GET:` `api/appeals/admin?type=ТИП&topic=СФЕРА&district=РАЙОН`  
+>  [page= count=] + параметры для пагинации  
+>   Получить обращения с фильтрами (парметры не обязательны, можно использовать любую комбинацию параметров)  
 >  `PATCH:` `api/appeals/admin/Y`  Ответить на это обращение
 
 
@@ -210,7 +231,9 @@
 >  Доступно всем  
 >  `GET:` `api/ballots/X` Получить голосование/опрос с id = X  
 >  `GET:` `api/ballots/votes` Получить все голосования  
->  `GET:` `api/ballots/surveys` Получить все опросы
+>  [page= count=] + параметры для пагинации  
+>  `GET:` `api/ballots/surveys` Получить все опросы  
+>  [page= count=] + параметры для пагинации
 
 > Доступно жителю                   
 >`PATCH:` `api/ballots/user/Y?ballot=X` Ответить на голосование/опрос с id=X, Y-id юзера
@@ -239,6 +262,7 @@
 | ------ |
 
 >`GET:` `api/search?find=X` Поиск по сайту, X - то, что нужно найти  
+>[page= count=] + параметры для пагинации (пагинируется гаждый объект отдельно)  
 >Доп. параметры:  
 >news=true, projects=true, documents=true, history=true, appeals=true, ballots=true  
 >(они не обязательны, можно их комбинировать для фильтрации поиска)
