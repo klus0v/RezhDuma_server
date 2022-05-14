@@ -21,9 +21,11 @@ public class SearchRestController {
                                    @RequestParam(required = false) Boolean documents,
                                    @RequestParam(required = false) Boolean history,
                                    @RequestParam(required = false) Boolean appeals,
-                                   @RequestParam(required = false) Boolean ballots) {
+                                   @RequestParam(required = false) Boolean ballots,
+                                     @RequestParam(required = false) Integer page,
+                                     @RequestParam(required = false) Integer count) {
         try {
-          return ResponseEntity.ok().body(searchService.makeFullSearch(find, news, projects, documents, history, appeals, ballots));
+          return ResponseEntity.ok().body(searchService.makeFullSearch(find, news, projects, documents, history, appeals, ballots, page, count));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
