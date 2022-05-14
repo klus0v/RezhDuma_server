@@ -1,6 +1,7 @@
 package com.example.rezh.services;
 
 
+import com.example.rezh.entities.Appeal;
 import com.example.rezh.entities.File;
 import com.example.rezh.entities.User;
 import com.example.rezh.entities.votes.Answer;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,6 +33,16 @@ public class VoteService {
 
     public List<Vote> getBallots(Boolean survey) {
         return voteRepository.findAllBySurvey(survey);
+    }
+
+    public List<Vote> doPagination(List<Vote> votes, Integer page, Integer count) {
+        List<Vote> currentVote = new ArrayList<>();
+        for (int i = (page-1)*count; i < page*count; i++) {
+            if (i > votes.size() - 1)
+                break;
+            currentVote.add(votes.get(i));
+        }
+        return currentVote;
     }
 
     public Vote getBallot(Long id) {

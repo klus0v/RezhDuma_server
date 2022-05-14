@@ -3,6 +3,7 @@ package com.example.rezh.services;
 
 import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
+import com.example.rezh.entities.News;
 import com.example.rezh.entities.User;
 import com.example.rezh.repositories.AppealRepository;
 import com.example.rezh.repositories.UserRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -177,5 +179,15 @@ public class AppealService {
                 appeal.setResponsibleName(responsible.getFirstName() + " " + responsible.getLastName());
             }
 
+    }
+
+    public List<Appeal> doPagination(List<Appeal> appeals, Integer page, Integer count) {
+        List<Appeal> currentAppeals = new ArrayList<>();
+        for (int i = (page-1)*count; i < page*count; i++) {
+            if (i > appeals.size() - 1)
+                break;
+            currentAppeals.add(appeals.get(i));
+        }
+        return currentAppeals;
     }
 }

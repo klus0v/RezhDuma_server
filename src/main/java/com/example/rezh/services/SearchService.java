@@ -1,16 +1,14 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.models.*;
+import com.example.rezh.filter.models.*;
 import com.example.rezh.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

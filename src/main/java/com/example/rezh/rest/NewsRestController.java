@@ -2,7 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.exceptions.NewsNotFoundException;
-import com.example.rezh.models.NewsModel;
+import com.example.rezh.filter.models.NewsModel;
 import com.example.rezh.services.NewsService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

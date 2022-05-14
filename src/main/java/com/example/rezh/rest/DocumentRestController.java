@@ -2,11 +2,9 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.exceptions.DocumentNotFoundException;
-import com.example.rezh.models.DocumentModel;
-import com.example.rezh.models.NewsModel;
+import com.example.rezh.filter.models.DocumentModel;
 import com.example.rezh.services.DocumentService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

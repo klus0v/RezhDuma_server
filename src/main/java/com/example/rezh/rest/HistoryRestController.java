@@ -2,8 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.exceptions.HistoryNotFoundException;
-import com.example.rezh.models.DocumentModel;
-import com.example.rezh.models.HistoryModel;
+import com.example.rezh.filter.models.HistoryModel;
 import com.example.rezh.services.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

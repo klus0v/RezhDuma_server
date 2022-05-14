@@ -32,7 +32,7 @@ public class User{
 
     private String password;
 
-    private Integer phone;
+    private String phone;
 
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();

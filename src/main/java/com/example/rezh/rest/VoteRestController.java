@@ -2,7 +2,7 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.entities.votes.Vote;
-import com.example.rezh.models.VoteModel;
+import com.example.rezh.filter.models.VoteModel;
 import com.example.rezh.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +28,30 @@ public class VoteRestController {
     }
 
     @GetMapping("/votes")
-    public ResponseEntity getAllVotes() {
+    public ResponseEntity getAllVotes(@RequestParam(required = false) Integer page,
+                                      @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(VoteModel.toModel(voteService.getBallots(false)));
+            var votes = voteService.getBallots(false);
+
+            if (page != null && count != null)
+                return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));
+
+            return ResponseEntity.ok(VoteModel.toModel(votes));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
     @GetMapping("/surveys")
-    public ResponseEntity getSurveys() {
+    public ResponseEntity getSurveys(@RequestParam(required = false) Integer page,
+                                     @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok().body(VoteModel.toModel(voteService.getBallots(true)));
+            var votes = voteService.getBallots(true);
+
+            if (page != null && count != null)
+                return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));
+
+            return ResponseEntity.ok(VoteModel.toModel(votes));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

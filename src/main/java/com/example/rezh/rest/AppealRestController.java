@@ -1,7 +1,9 @@
 package com.example.rezh.rest;
 
 
-import com.example.rezh.models.AppealModel;
+import com.example.rezh.entities.Appeal;
+import com.example.rezh.filter.models.AppealModel;
+import com.example.rezh.filter.models.NewsModel;
 import com.example.rezh.services.AppealService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -20,9 +23,13 @@ public class AppealRestController {
 
     //all
     @GetMapping("/popular")
-    public ResponseEntity getFrequentAppeals() {
+    public ResponseEntity getFrequentAppeals(@RequestParam(required = false) Integer page,
+                                             @RequestParam(required = false) Integer count) {
         try {
-            return ResponseEntity.ok(AppealModel.toModel(appealService.getFrequents()));
+            var appeals = appealService.getFrequents();
+            if (page != null && count != null)
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
+            return ResponseEntity.ok(AppealModel.toModel(appeals));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -32,12 +39,20 @@ public class AppealRestController {
     @GetMapping(value = "/user/{id}")
     public ResponseEntity getUserAppeals(@PathVariable Long id,
                                          @RequestHeader(name = "Authorization") String token,
-                                         @RequestParam(required = false) Boolean answered) {
+                                         @RequestParam(required = false) Boolean answered,
+                                         @RequestParam(required = false) Integer page,
+                                         @RequestParam(required = false) Integer count) {
         try {
-            if (answered != null) {
-                return ResponseEntity.ok().body(AppealModel.toModel(appealService.getAnsweredAppeals(id, token, answered)));
-            }
-            return ResponseEntity.ok().body(AppealModel.toModel(appealService.getAppeals(id, token)));
+            List<Appeal> appeals;
+            if (answered != null)
+                appeals = appealService.getAnsweredAppeals(id, token, answered);
+            else
+                appeals = appealService.getAppeals(id, token);
+
+            if (page != null && count != null)
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
+
+            return ResponseEntity.ok().body(AppealModel.toModel(appeals));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -105,11 +120,19 @@ public class AppealRestController {
     @GetMapping("/admin")
     public ResponseEntity getAllAppeals(@RequestParam(required = false) String type,
                                         @RequestParam(required = false) String topic,
-                                        @RequestParam(required = false) String district) {
+                                        @RequestParam(required = false) String district,
+                                        @RequestParam(required = false) Integer page,
+                                        @RequestParam(required = false) Integer count) {
         try {
+            List<Appeal> appeals;
             if (type != null || topic != null || district != null)
-                return ResponseEntity.ok().body(AppealModel.toModel(appealService.getFiltredAllAppeals(type, topic, district)));
-            return ResponseEntity.ok().body(AppealModel.toModel(appealService.getAllAppeals()));
+                appeals = appealService.getFiltredAllAppeals(type, topic, district);
+            else
+                appeals = appealService.getAllAppeals();
+
+            if (page != null && count != null)
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
+            return ResponseEntity.ok(AppealModel.toModel(appeals));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

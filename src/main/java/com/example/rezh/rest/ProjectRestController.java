@@ -1,8 +1,7 @@
 package com.example.rezh.rest;
 
 import com.example.rezh.exceptions.ProjectNotFoundException;
-import com.example.rezh.models.HistoryModel;
-import com.example.rezh.models.ProjectModel;
+import com.example.rezh.filter.models.ProjectModel;
 import com.example.rezh.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
