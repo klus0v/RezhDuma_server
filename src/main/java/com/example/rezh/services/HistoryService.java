@@ -31,15 +31,24 @@ public class HistoryService {
         return historyRepository.getById(id);
     }
 
-    public List<History> getHistoryPagination(Integer page, Integer count) {
-        List<History> history = getAllHistory();
-        List<History> currentHistory = new ArrayList<>();
-        for (int i = (page-1)*count; i < page*count; i++) {
-            if (i > history.size() - 1)
-                break;
-            currentHistory.add(history.get(i));
+    public List<History> getHistoryPagination(Integer page, Integer count, String find) {
+        List<History> history;
+        if (find == null)
+            history = getAllHistory();
+
+        else
+            history = historyRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+
+        if (page != null && count != null) {
+            List<History> currentHistory = new ArrayList<>();
+            for (int i = (page - 1) * count; i < page * count; i++) {
+                if (i > history.size() - 1)
+                    break;
+                currentHistory.add(history.get(i));
+            }
+            return currentHistory;
         }
-        return currentHistory;
+        return history;
     }
 
     public List<History> getAllHistory(){

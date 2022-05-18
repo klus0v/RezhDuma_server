@@ -33,11 +33,10 @@ public class ProjectRestController {
 
     @GetMapping
     public ResponseEntity getAllProjects(@RequestParam(required = false) Integer page,
-                                         @RequestParam(required = false) Integer count) {
+                                         @RequestParam(required = false) Integer count,
+                                         @RequestParam(required = false) String find) {
         try {
-            if (page == null || count == null)
-                return ResponseEntity.ok().body(ProjectModel.toModel(projectService.getAllProjects()));
-            return ResponseEntity.ok(ProjectModel.toModel(projectService.getProjectsPagination(page, count)));
+            return ResponseEntity.ok(ProjectModel.toModel(projectService.getProjectsPagination(page, count, find)));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

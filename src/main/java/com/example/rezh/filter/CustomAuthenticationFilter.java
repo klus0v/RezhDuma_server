@@ -21,13 +21,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 
 @Slf4j
-@CrossOrigin
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
@@ -41,8 +44,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
 
     @Override
+    @CrossOrigin
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        response.addHeader("Access-Control-Allow-Origin", "*");
+        //response.addHeader("Access-Control-Allow-Origin", "*");
+
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         log.info("Email: {}", email); log.info("Password: {}", password);

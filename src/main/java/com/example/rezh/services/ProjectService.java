@@ -32,15 +32,25 @@ public class ProjectService {
         return projectRepository.getById(id);
     }
 
-    public List<Project> getProjectsPagination(Integer page, Integer count) {
-        List<Project> projects = getAllProjects();
-        List<Project> currentProjects = new ArrayList<>();
-        for (int i = (page-1)*count; i < page*count; i++) {
-            if (i > projects.size() - 1)
-                break;
-            currentProjects.add(projects.get(i));
+    public List<Project> getProjectsPagination(Integer page, Integer count, String find) {
+
+        List<Project> projects;
+        if (find == null)
+            projects = getAllProjects();
+
+        else
+            projects = projectRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+
+        if (page != null && count != null) {
+            List<Project> currentProjects = new ArrayList<>();
+            for (int i = (page - 1) * count; i < page * count; i++) {
+                if (i > projects.size() - 1)
+                    break;
+                currentProjects.add(projects.get(i));
+            }
+            return currentProjects;
         }
-        return currentProjects;
+        return projects;
     }
 
     public List<Project> getAllProjects(){

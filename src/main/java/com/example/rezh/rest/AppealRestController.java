@@ -23,9 +23,10 @@ public class AppealRestController {
     //all
     @GetMapping("/popular")
     public ResponseEntity getFrequentAppeals(@RequestParam(required = false) Integer page,
-                                             @RequestParam(required = false) Integer count) {
+                                             @RequestParam(required = false) Integer count,
+                                             @RequestParam(required = false) String find) {
         try {
-            var appeals = appealService.getFrequents();
+            var appeals = appealService.getFrequents(find);
             if (page != null && count != null)
                 return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
             return ResponseEntity.ok(AppealModel.toModel(appeals));

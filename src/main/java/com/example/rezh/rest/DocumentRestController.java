@@ -32,11 +32,10 @@ public class DocumentRestController {
 
     @GetMapping
     public ResponseEntity getDocuments(@RequestParam(required = false) Integer page,
-                                       @RequestParam(required = false) Integer count) {
+                                       @RequestParam(required = false) Integer count,
+                                       @RequestParam(required = false) String find) {
         try {
-            if (page == null || count == null)
-                return ResponseEntity.ok(DocumentModel.toModel(documentService.getAllDocuments()));
-            return ResponseEntity.ok(DocumentModel.toModel(documentService.getDocumentsPagination(page, count)));
+            return ResponseEntity.ok(DocumentModel.toModel(documentService.getDocumentsPagination(page, count, find)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

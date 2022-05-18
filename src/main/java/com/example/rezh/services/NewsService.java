@@ -35,16 +35,26 @@ public class NewsService {
         return newsRepository.getById(id);
     }
 
-    public List<News> getNewsPagination(Integer page, Integer count) {
+    public List<News> getNewsPaginationSearch(Integer page, Integer count, String find) {
 
-        List<News> news = getAllNews();
-        List<News> currentNews = new ArrayList<>();
-        for (int i = (page-1)*count; i < page*count; i++) {
-            if (i > news.size() - 1)
-                break;
-            currentNews.add(news.get(i));
+        List<News> news;
+
+        if (find == null)
+            news = getAllNews();
+
+        else
+            news = newsRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+
+        if (page != null && count != null) {
+            List<News> currentNews = new ArrayList<>();
+            for (int i = (page - 1) * count; i < page * count; i++) {
+                if (i > news.size() - 1)
+                    break;
+                currentNews.add(news.get(i));
+            }
+            return currentNews;
         }
-        return currentNews;
+        return news;
     }
 
     public List<News> getEventsPagination(Integer page, Integer count) {

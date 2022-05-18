@@ -33,11 +33,10 @@ public class NewsRestController {
 
     @GetMapping
     public ResponseEntity getNews(@RequestParam(required = false) Integer page,
-                                  @RequestParam(required = false) Integer count) {
+                                  @RequestParam(required = false) Integer count,
+                                  @RequestParam(required = false) String find) {
         try {
-            if (page == null || count == null)
-                return ResponseEntity.ok(NewsModel.toModel(newsService.getAllNews()));
-            return ResponseEntity.ok(NewsModel.toModel(newsService.getNewsPagination(page, count)));
+            return ResponseEntity.ok(NewsModel.toModel(newsService.getNewsPaginationSearch(page, count, find)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

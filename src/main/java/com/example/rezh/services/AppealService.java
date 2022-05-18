@@ -31,7 +31,9 @@ public class AppealService {
     private final FileStore fileStore;
 
 
-    public List<Appeal> getFrequents() {
+    public List<Appeal> getFrequents(String find) {
+        if (find != null)
+            return appealRepository.findAllByTextContainingOrResponseContaining("%" + find + "%", "%" + find + "%");
         return appealRepository.findAllByFrequent(true);
     }
 

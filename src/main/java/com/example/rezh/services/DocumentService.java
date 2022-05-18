@@ -31,15 +31,25 @@ public class DocumentService {
         return documentRepository.getById(id);
     }
 
-    public List<Document> getDocumentsPagination(Integer page, Integer count) {
-        List<Document> documents = getAllDocuments();
-        List<Document> currentDocuments = new ArrayList<>();
-        for (int i = (page-1)*count; i < page*count; i++) {
-            if (i > documents.size() - 1)
-                break;
-            currentDocuments.add(documents.get(i));
+    public List<Document> getDocumentsPagination(Integer page, Integer count, String find) {
+        List<Document> documents;
+
+        if (find == null)
+            documents = getAllDocuments();
+
+        else
+            documents = documentRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+
+        if (page != null && count != null) {
+            List<Document> currentDocuments = new ArrayList<>();
+            for (int i = (page - 1) * count; i < page * count; i++) {
+                if (i > documents.size() - 1)
+                    break;
+                currentDocuments.add(documents.get(i));
+            }
+            return currentDocuments;
         }
-        return currentDocuments;
+        return documents;
     }
 
     public List<Document> getAllDocuments(){

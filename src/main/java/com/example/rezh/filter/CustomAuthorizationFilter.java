@@ -18,20 +18,28 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @Slf4j
-@CrossOrigin
+
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    @CrossOrigin
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Headers", "*");
+        System.out.println(request.getHeader(AUTHORIZATION));
+        if (Objects.equals(request.getMethod(), "OPTIONS")) {
+            response.setStatus(200);
+            return;
+        }
+
         if (request.getServletPath().equals("/api/login")
                 || request.getServletPath().equals("/api/token/refresh")
                 || request.getServletPath().equals("/api/registration")) {

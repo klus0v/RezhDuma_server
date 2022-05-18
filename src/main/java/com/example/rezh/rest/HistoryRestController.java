@@ -32,11 +32,10 @@ public class HistoryRestController {
 
     @GetMapping
     public ResponseEntity getAllHistory(@RequestParam(required = false) Integer page,
-                                        @RequestParam(required = false) Integer count) {
+                                        @RequestParam(required = false) Integer count,
+                                        @RequestParam(required = false) String find) {
         try {
-            if (page == null || count == null)
-                return ResponseEntity.ok().body(HistoryModel.toModel(historyService.getAllHistory()));
-            return ResponseEntity.ok(HistoryModel.toModel(historyService.getHistoryPagination(page, count)));
+            return ResponseEntity.ok(HistoryModel.toModel(historyService.getHistoryPagination(page, count, find)));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
