@@ -1,38 +1,31 @@
 package com.example.rezh.repositories;
 
 
+import com.amazonaws.services.dynamodbv2.xspec.B;
 import com.example.rezh.entities.Appeal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface AppealRepository extends JpaRepository<Appeal, Long> {
     Appeal getById(Long id);
 
-    List<Appeal> findAllByFrequent(Boolean True);
-
-    List<Appeal> findAllByUserId(Long id);
-
-    List<Appeal> findAllByUserIdAndAnswered(Long id, Boolean answered);
-
-    List<Appeal> findAllByTypeAndTopicTagAndDistrictTag(String type, String topicTag, String districtTag);
-
-    List<Appeal> findAllByTypeAndTopicTag(String type, String topicTag);
-
-    List<Appeal> findAllByTypeAndDistrictTag(String type, String districtTag);
-
-    List<Appeal> findAllByTopicTagAndDistrictTag(String topicTag, String districtTag);
-
-    List<Appeal> findAllByType(String type);
-
-    List<Appeal> findAllByTopicTag(String topicTag);
-
-    List<Appeal> findAllByDistrictTag(String districtTag);
+    @Query(" SELECT c FROM Appeal c WHERE c.text like :text AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic AND c.frequent = true OR c.response like :response AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic AND c.frequent = true ")
+    List<Appeal> findTopAppeals(@Param("text") String text, @Param("response") String response, @Param("type") String type, @Param("district") String district, @Param("topic") String topic);
 
 
+    @Query(" SELECT c FROM Appeal c WHERE c.user.id = :id AND c.text like :text AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic ")
+    List<Appeal> findUserAppeals(@Param("id") Long id, @Param("text") String text, @Param("type") String type, @Param("district") String district, @Param("topic") String topic);
+
+    @Query(" SELECT c FROM Appeal c WHERE c.user.id = :id AND c.text like :text AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic AND c.answered = :answered ")
+    List<Appeal> findUserAppealsAnswered(@Param("id") Long id, @Param("text") String text, @Param("answered") Boolean answered,  @Param("type") String type, @Param("district") String district, @Param("topic") String topic);
 
 
-    @Query("Select c from Appeal c where c.text like %:text% and c.frequent = true or c.response like %:response% and c.frequent = true")
-    List<Appeal> findAllByTextContainingOrResponseContaining(String text, String response);
+    @Query(" SELECT c FROM Appeal c WHERE  c.text like :text AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic AND c.answered = :answered ")
+    List<Appeal> findAllAppealsAnswered(@Param("text") String text,@Param("answered") Boolean answered, @Param("type") String type, @Param("district") String district, @Param("topic") String topic);
+
+    @Query(" SELECT c FROM Appeal c WHERE c.text like :text AND c.type like :type AND c.districtTag like :district AND c.topicTag like :topic ")
+    List<Appeal> findAllAppeals(@Param("text") String text, @Param("type") String type, @Param("district") String district, @Param("topic") String topic);
 }

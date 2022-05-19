@@ -24,9 +24,12 @@ public class AppealRestController {
     @GetMapping("/popular")
     public ResponseEntity getFrequentAppeals(@RequestParam(required = false) Integer page,
                                              @RequestParam(required = false) Integer count,
-                                             @RequestParam(required = false) String find) {
+                                             @RequestParam(required = false, defaultValue = "") String find,
+                                             @RequestParam(required = false, defaultValue = "") String type,
+                                             @RequestParam(required = false, defaultValue = "") String district,
+                                             @RequestParam(required = false, defaultValue = "") String topic) {
         try {
-            var appeals = appealService.getFrequents(find);
+            var appeals = appealService.getFrequents(find, type, district, topic);
             if (page != null && count != null)
                 return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
             return ResponseEntity.ok(AppealModel.toModel(appeals));
@@ -40,14 +43,14 @@ public class AppealRestController {
     public ResponseEntity getUserAppeals(@PathVariable Long id,
                                          @RequestHeader(name = "Authorization") String token,
                                          @RequestParam(required = false) Boolean answered,
+                                         @RequestParam(required = false, defaultValue = "") String find,
+                                         @RequestParam(required = false, defaultValue = "") String type,
+                                         @RequestParam(required = false, defaultValue = "") String district,
+                                         @RequestParam(required = false, defaultValue = "") String topic,
                                          @RequestParam(required = false) Integer page,
                                          @RequestParam(required = false) Integer count) {
         try {
-            List<Appeal> appeals;
-            if (answered != null)
-                appeals = appealService.getAnsweredAppeals(id, token, answered);
-            else
-                appeals = appealService.getAppeals(id, token);
+            List<Appeal> appeals = appealService.getAppeals(id, token, answered, find,  type, district, topic);
 
             if (page != null && count != null)
                 return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
@@ -118,17 +121,15 @@ public class AppealRestController {
     }
 
     @GetMapping("/admin")
-    public ResponseEntity getAllAppeals(@RequestParam(required = false) String type,
-                                        @RequestParam(required = false) String topic,
-                                        @RequestParam(required = false) String district,
+    public ResponseEntity getAllAppeals(@RequestParam(required = false) Boolean answered,
+                                        @RequestParam(required = false, defaultValue = "") String find,
+                                        @RequestParam(required = false, defaultValue = "") String type,
+                                        @RequestParam(required = false, defaultValue = "") String district,
+                                        @RequestParam(required = false, defaultValue = "") String topic,
                                         @RequestParam(required = false) Integer page,
                                         @RequestParam(required = false) Integer count) {
         try {
-            List<Appeal> appeals;
-            if (type != null || topic != null || district != null)
-                appeals = appealService.getFiltredAllAppeals(type, topic, district);
-            else
-                appeals = appealService.getAllAppeals();
+            List<Appeal>  appeals = appealService.getFiltredAllAppeals(answered, find, type, topic, district);
 
             if (page != null && count != null)
                 return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));

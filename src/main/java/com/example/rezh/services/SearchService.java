@@ -38,17 +38,17 @@ public class SearchService {
         boolean searchAll = !news && !projects && !documents && !history && !appeals && !ballots;
 
         if (news || searchAll)
-            allElements.add(NewsModel.toModel(doNewsPagination(newsRepository.findAllByTitleContainingOrTextContaining(searchWord, searchWord), page, count)));
+            allElements.add(NewsModel.toModel(doNewsPagination(newsRepository.findNews(searchWord), page, count)));
         if (projects || searchAll)
-            allElements.add(ProjectModel.toModel(doProjectsPagination(projectRepository.findAllByTitleContainingOrTextContaining(searchWord, searchWord), page, count)));
+            allElements.add(ProjectModel.toModel(doProjectsPagination(projectRepository.findProjects(searchWord), page, count)));
         if (documents || searchAll)
-            allElements.add(DocumentModel.toModel(doDocumentsPagination(documentRepository.findAllByTitleContainingOrTextContaining(searchWord, searchWord), page, count)));
+            allElements.add(DocumentModel.toModel(doDocumentsPagination(documentRepository.findDocuments(searchWord), page, count)));
         if (history || searchAll)
-            allElements.add(HistoryModel.toModel(doHistoryPagination(historyRepository.findAllByTitleContainingOrTextContaining(searchWord, searchWord), page, count)));
+            allElements.add(HistoryModel.toModel(doHistoryPagination(historyRepository.findHistory(searchWord), page, count)));
         if (appeals || searchAll)
-            allElements.add(AppealModel.toModel(doAppealsPagination(appealRepository.findAllByTextContainingOrResponseContaining(searchWord, searchWord), page, count)));
+            allElements.add(AppealModel.toModel(doAppealsPagination(appealRepository.findTopAppeals(searchWord, searchWord, "%", "%", "%"), page, count)));
         if (ballots || searchAll)
-            allElements.add(VoteModel.toModel(doVotesPagination(voteRepository.findAllByTopicContaining(searchWord), page, count)));
+            allElements.add(VoteModel.toModel(doVotesPagination(voteRepository.findVotes(searchWord), page, count)));
 
         return allElements;
     }

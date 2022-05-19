@@ -29,9 +29,10 @@ public class VoteRestController {
 
     @GetMapping("/votes")
     public ResponseEntity getAllVotes(@RequestParam(required = false) Integer page,
-                                      @RequestParam(required = false) Integer count) {
+                                      @RequestParam(required = false) Integer count,
+                                      @RequestParam(required = false) String find) {
         try {
-            var votes = voteService.getBallots(false);
+            var votes = voteService.getBallots(false, find);
 
             if (page != null && count != null)
                 return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));
@@ -44,9 +45,10 @@ public class VoteRestController {
 
     @GetMapping("/surveys")
     public ResponseEntity getSurveys(@RequestParam(required = false) Integer page,
-                                     @RequestParam(required = false) Integer count) {
+                                     @RequestParam(required = false) Integer count,
+                                     @RequestParam(required = false) String find) {
         try {
-            var votes = voteService.getBallots(true);
+            var votes = voteService.getBallots(true, find);
 
             if (page != null && count != null)
                 return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));

@@ -43,7 +43,7 @@ public class NewsService {
             news = getAllNews();
 
         else
-            news = newsRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+            news = newsRepository.findNews( "%" + find + "%");
 
         if (page != null && count != null) {
             List<News> currentNews = new ArrayList<>();

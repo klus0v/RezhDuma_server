@@ -37,7 +37,7 @@ public class HistoryService {
             history = getAllHistory();
 
         else
-            history = historyRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+            history = historyRepository.findHistory( "%" + find + "%");
 
         if (page != null && count != null) {
             List<History> currentHistory = new ArrayList<>();

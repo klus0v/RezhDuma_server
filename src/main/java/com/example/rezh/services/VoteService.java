@@ -31,7 +31,13 @@ public class VoteService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
-    public List<Vote> getBallots(Boolean survey) {
+    public List<Vote> getBallots(Boolean survey, String find) {
+        if (find != null)
+            if (survey)
+                return  voteRepository.findSurveysWithWord("%" + find + "%");
+            else
+                return voteRepository.findVotesWithWord("%" + find + "%");
+
         return voteRepository.findAllBySurvey(survey);
     }
 

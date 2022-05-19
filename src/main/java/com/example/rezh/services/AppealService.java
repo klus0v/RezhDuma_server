@@ -31,23 +31,18 @@ public class AppealService {
     private final FileStore fileStore;
 
 
-    public List<Appeal> getFrequents(String find) {
-        if (find != null)
-            return appealRepository.findAllByTextContainingOrResponseContaining("%" + find + "%", "%" + find + "%");
-        return appealRepository.findAllByFrequent(true);
+    public List<Appeal> getFrequents(String find, String type, String district, String topic) {
+        return appealRepository.findTopAppeals("%" + find + "%", "%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
     }
 
-    public List<Appeal> getAppeals(Long id, String token) throws AuthenticationException {
+    public List<Appeal> getAppeals(Long id, String token, Boolean answered, String find, String type, String district, String topic) throws AuthenticationException {
         if (!CheckUser(id, token))
             throw new AuthenticationException("Нет прав");
-        return  appealRepository.findAllByUserId(id);
+        if (answered != null)
+            return  appealRepository.findUserAppealsAnswered(id, "%" + find + "%", answered, "%" + type + "%", "%" + district + "%", "%" + topic + "%");
+        return  appealRepository.findUserAppeals(id,"%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
     }
 
-    public List<Appeal> getAnsweredAppeals(Long id, String token, Boolean answered) throws AuthenticationException {
-        if (!CheckUser(id, token))
-            throw new AuthenticationException("Нет прав");
-        return appealRepository.findAllByUserIdAndAnswered(id, answered);
-    }
 
     public void deleteAppeal(Long id, String token, Long appealID) throws AuthenticationException {
         if (!CheckUser(id, token) || !Objects.equals(appealRepository.findById(appealID).get().getUser().getId(), id))
@@ -94,6 +89,45 @@ public class AppealService {
         appealRepository.save(appeal);
     }
 
+
+
+
+    public Appeal getAppeal(Long appealID) {
+        return appealRepository.getById(appealID);
+    }
+
+    public List<Appeal> getAllAppeals() {
+        return appealRepository.findAll();
+    }
+
+
+
+    public void setAnswer(Long appealID, Long id, String response, Boolean frequent) {
+        Appeal appeal = appealRepository.getById(appealID);
+        if (response != null)
+            appeal.setResponse(response);
+        if (frequent)
+            appeal.setFrequent(true);
+        if (!appeal.getAnswered()) {
+            appeal.setAnswered(true);
+            appeal.setResponseDate(LocalDateTime.now());
+        }
+        if (userRepository.findById(id).isPresent()) {
+            User responsible = userRepository.getById(id);
+            appeal.setResponsibleName(responsible.getFirstName() + " " + responsible.getLastName());
+        }
+
+    }
+
+    public List<Appeal> getFiltredAllAppeals(Boolean answered, String find, String type, String topic, String district) {
+        if (answered != null)
+            return  appealRepository.findAllAppealsAnswered("%" + find + "%", answered,"%" + type + "%", "%" + district + "%", "%" + topic + "%");
+        return  appealRepository.findAllAppeals("%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
+    }
+
+
+
+
     private boolean CheckUser(Long id, String token) {
         var emailString = new String(Base64.getDecoder().decode(token.substring(42, 150)));
         var endIndex = emailString.indexOf(",") - 1;
@@ -104,6 +138,9 @@ public class AppealService {
 
         return email.equals(tokenEmail);
     }
+
+
+
 
     private void addFiles(ArrayList<MultipartFile> files, Appeal appeal) throws IOException {
         for (MultipartFile file : files) {
@@ -133,54 +170,6 @@ public class AppealService {
         metadata.put("Content-Type", file.getContentType());
         metadata.put("Content-Length", String.valueOf(file.getSize()));
         return metadata;
-    }
-
-    public Appeal getAppeal(Long appealID) {
-        return appealRepository.getById(appealID);
-    }
-
-
-    public List<Appeal> getAllAppeals() {
-        return appealRepository.findAll();
-    }
-
-    public List<Appeal> getFiltredAllAppeals(String type, String topicTag, String districtTag) {
-
-        if (type != null && topicTag != null && districtTag != null)
-            return appealRepository.findAllByTypeAndTopicTagAndDistrictTag(type, topicTag, districtTag);
-
-        if (type != null && topicTag != null)
-            return appealRepository.findAllByTypeAndTopicTag(type, topicTag);
-        if (type != null && districtTag != null)
-            return appealRepository.findAllByTypeAndDistrictTag(type, districtTag);
-        if (topicTag != null && districtTag != null)
-            return appealRepository.findAllByTopicTagAndDistrictTag(topicTag, districtTag);
-
-        if (type != null)
-            return appealRepository.findAllByType(type);
-        if (topicTag != null)
-            return appealRepository.findAllByTopicTag(topicTag);
-        if (districtTag != null)
-            return appealRepository.findAllByDistrictTag(districtTag);
-
-        return new ArrayList<Appeal>();
-    }
-
-    public void setAnswer(Long appealID, Long id, String response, Boolean frequent) {
-            Appeal appeal = appealRepository.getById(appealID);
-            if (response != null)
-                appeal.setResponse(response);
-            if (frequent)
-                appeal.setFrequent(true);
-            if (!appeal.getAnswered()) {
-                appeal.setAnswered(true);
-                appeal.setResponseDate(LocalDateTime.now());
-            }
-            if (userRepository.findById(id).isPresent()) {
-                User responsible = userRepository.getById(id);
-                appeal.setResponsibleName(responsible.getFirstName() + " " + responsible.getLastName());
-            }
-
     }
 
     public List<Appeal> doPagination(List<Appeal> appeals, Integer page, Integer count) {

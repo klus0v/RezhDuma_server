@@ -39,7 +39,7 @@ public class ProjectService {
             projects = getAllProjects();
 
         else
-            projects = projectRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+            projects = projectRepository.findProjects("%" + find + "%");
 
         if (page != null && count != null) {
             List<Project> currentProjects = new ArrayList<>();

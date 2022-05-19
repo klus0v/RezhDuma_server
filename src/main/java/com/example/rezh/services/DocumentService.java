@@ -38,7 +38,7 @@ public class DocumentService {
             documents = getAllDocuments();
 
         else
-            documents = documentRepository.findAllByTitleContainingOrTextContaining("%" + find + "%", "%" + find + "%");
+            documents = documentRepository.findDocuments( "%" + find + "%");
 
         if (page != null && count != null) {
             List<Document> currentDocuments = new ArrayList<>();
