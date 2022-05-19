@@ -1,14 +1,13 @@
 package com.example.rezh.repositories;
 
 
-import com.example.rezh.entities.Document;
 import com.example.rezh.entities.Project;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ProjectRepository extends CrudRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, Long> {
     Project getById(Long id);
 
     @Query("Select c from Project c where c.title like %:title% or c.text like %:text%")

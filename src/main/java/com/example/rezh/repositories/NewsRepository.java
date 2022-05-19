@@ -19,4 +19,5 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     @Query("Select c from News c where c.title like %:title% or c.text like %:text%")
     List<News> findAllByTitleContainingOrTextContaining(String title, String text);
+
 }

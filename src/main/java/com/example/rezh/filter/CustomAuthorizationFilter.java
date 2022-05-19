@@ -34,7 +34,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Allow-Headers", "*");
-        System.out.println(request.getHeader(AUTHORIZATION));
+        response.addHeader("Access-Control-Allow-Methods", "*");
         if (Objects.equals(request.getMethod(), "OPTIONS")) {
             response.setStatus(200);
             return;

@@ -1,6 +1,6 @@
 package com.example.rezh.repositories;
 
-import com.example.rezh.entities.History;
+
 import com.example.rezh.entities.votes.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
