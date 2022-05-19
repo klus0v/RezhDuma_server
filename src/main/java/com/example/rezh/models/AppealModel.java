@@ -18,6 +18,9 @@ public class AppealModel {
     private Long id;
     private String text;
     private LocalDateTime appealDate;
+    private String type;
+    private String district;
+    private String topic;
     private String responsibleName;
     private String response;
     private LocalDateTime responseDate;
@@ -32,6 +35,9 @@ public class AppealModel {
         appeal.setAppealDate(appealEntity.getAppealDate());
         appeal.setResponsibleName(appealEntity.getResponsibleName());
         appeal.setResponse(appealEntity.getResponse());
+        appeal.setType(appealEntity.getType());
+        appeal.setDistrict(appealEntity.getDistrictTag());
+        appeal.setTopic(appealEntity.getTopicTag());
         appeal.setResponseDate(appealEntity.getResponseDate());
         appeal.setFilesNames(new ArrayList<>());
 
