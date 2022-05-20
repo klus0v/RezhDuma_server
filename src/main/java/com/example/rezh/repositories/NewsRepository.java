@@ -18,7 +18,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     News getById(Long id);
 
-    @Query(" SELECT c FROM News c WHERE c.title like :text OR c.text like :text ")
+    @Query(" SELECT c FROM News c WHERE c.title like :text OR c.text like :text order by c.id desc ")
     List<News> findNews(@Param("text") String text);
 
 }

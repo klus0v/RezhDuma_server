@@ -14,6 +14,6 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query("Select c from Document c order by c.id desc")
     List<Document> findAll();
 
-    @Query(" SELECT c FROM Document c WHERE c.title like :text OR c.text like :text ")
+    @Query(" SELECT c FROM Document c WHERE c.title like :text OR c.text like :text order by c.id desc ")
     List<Document> findDocuments(@Param("text") String text);
 }
