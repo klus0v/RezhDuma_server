@@ -31,8 +31,8 @@ public class AppealRestController {
         try {
             var appeals = appealService.getFrequents(find, type, district, topic);
             if (page != null && count != null)
-                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
-            return ResponseEntity.ok(AppealModel.toModel(appeals));
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count), false));
+            return ResponseEntity.ok(AppealModel.toModel(appeals, false));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -53,9 +53,9 @@ public class AppealRestController {
             List<Appeal> appeals = appealService.getAppeals(id, token, answered, find,  type, district, topic);
 
             if (page != null && count != null)
-                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count), false));
 
-            return ResponseEntity.ok().body(AppealModel.toModel(appeals));
+            return ResponseEntity.ok().body(AppealModel.toModel(appeals, false));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -114,7 +114,7 @@ public class AppealRestController {
     @GetMapping(value = "admin/{appealID}")
     public ResponseEntity getAnyOneAppeal(@PathVariable Long appealID) {
         try {
-            return ResponseEntity.ok().body(AppealModel.toModel(appealService.getAppeal(appealID)));
+            return ResponseEntity.ok().body(AppealModel.toModel(appealService.getAppeal(appealID), true));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
@@ -132,8 +132,8 @@ public class AppealRestController {
             List<Appeal>  appeals = appealService.getFiltredAllAppeals(answered, find, type, topic, district);
 
             if (page != null && count != null)
-                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count)));
-            return ResponseEntity.ok(AppealModel.toModel(appeals));
+                return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count), true));
+            return ResponseEntity.ok(AppealModel.toModel(appeals, true));
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

@@ -96,12 +96,6 @@ public class AppealService {
         return appealRepository.getById(appealID);
     }
 
-    public List<Appeal> getAllAppeals() {
-        return appealRepository.findAll();
-    }
-
-
-
     public void setAnswer(Long appealID, Long id, String response, Boolean frequent) {
         Appeal appeal = appealRepository.getById(appealID);
         if (response != null)

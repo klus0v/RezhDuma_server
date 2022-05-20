@@ -46,7 +46,7 @@ public class SearchService {
         if (history || searchAll)
             allElements.add(HistoryModel.toModel(doHistoryPagination(historyRepository.findHistory(searchWord), page, count)));
         if (appeals || searchAll)
-            allElements.add(AppealModel.toModel(doAppealsPagination(appealRepository.findTopAppeals(searchWord, searchWord, "%", "%", "%"), page, count)));
+            allElements.add(AppealModel.toModel(doAppealsPagination(appealRepository.findTopAppeals(searchWord, searchWord, "%", "%", "%"), page, count), true));
         if (ballots || searchAll)
             allElements.add(VoteModel.toModel(doVotesPagination(voteRepository.findVotes(searchWord), page, count)));
 
