@@ -248,24 +248,24 @@
 
 
 
-|  4. голосования/опросы |
+|  4. голосования |
 | ------ |
 >  Доступно всем  
->  `GET:` `api/ballots/X` Получить голосование/опрос с id = X
+>  `GET:` `api/votes/X?user=Y` Получить голосование с id=X  
+>    [user=Y] - для получения инфы, может ли юзер Y голосовать 
 >
->  `GET:` `api/ballots/votes` Получить все голосования  
+>  `GET:` `api/votes?user=Y` Получить все голосования  
+> [user=Y] - для получения инфы, может ли юзер Y голосовать  
 >  [page= count=] + параметры для пагинации; [find=] параметр для поиска
 >
->  `GET:` `api/ballots/surveys` Получить все опросы  
->  [page= count=] + параметры для пагинации; [find=] параметр для поиска
 
 > Доступно жителю                   
->`PATCH:` `api/ballots/user/Y?ballot=X` Ответить на голосование/опрос с id=X, Y-id юзера
+>`PATCH:` `api/votes/user/Y?votes=X` Ответить юзеру с id=Y на голосование с id=X,
 >
 
 >  Доступно депутату   
->  `POST:` `api/ballots/admin` Создать опрос/голосование  
->  `DELETE:` `api/ballots/admin/X`  Удалить голосование/опрос c id=X
+>  `POST:` `api/votes/admin` Создать голосование  
+>  `DELETE:` `api/votes/admin/X`  Удалить голосование c id=X
 
 
 >
@@ -624,30 +624,29 @@
       frequent: true/false (флажок для отметки вопроса как частый)
    ```
 
-- Голосования/опросы
+- Голосования
 
 <br/>
 
 - Доступно всем
    ```
-   GET: api/ballots/X  
-   GET: api/ballots/votes
-   GET: api/ballots/surveys
+   GET: api/votes/X  
+   GET: api/votes
    ```
 
 - Доступно жителям
    ```
-   PATCH: api/ballots/user/Y?ballot=X
+   PATCH: api/votes/user/Y?vote=X
    
    Y - id юзера
-   ballot=X, параметр, где X - id опроса/голосования
+   vote=X, параметр, где X - id голосования
      
    Headers: 
        Authorization: 'Rezh {token}'
      
    тело запроса (JSON):
    [id1, id2, id3]
-   	(массив с id ответов за которые проголосовал житель)
+   	(массив с id ответов(answers ID) за которые проголосовал житель)
        
    ```
 
@@ -655,14 +654,14 @@
 
 - Доступно депутату  (без тела запроса)
    ```
-     DELETE: api/ballots/admin/Y
-     Y - id опроса/голосования
+     DELETE: api/votes/admin/Y
+     Y - id голосования
      
      Headers: Authorization: 'Rezh {token}'
    ```
 - Доступно депутату  (тело запроса JSON)
    ```
-   POST: api/ballots/admin
+   POST: api/votes/admin
      
    Headers: 
        Authorization: 'Rezh {token}'
@@ -671,7 +670,6 @@
      
   	{
       "topic": "Тема опроса",
-      "survey": true,
       "questions": [
           {
               "question": "Вопрос 1",
