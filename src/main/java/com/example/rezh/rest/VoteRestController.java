@@ -8,56 +8,57 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.amazonaws.services.elasticbeanstalk.model.ConfigurationOptionValueType.List;
+
 
 @RestController
 @CrossOrigin
 @AllArgsConstructor
-@RequestMapping("/api/ballots")
+@RequestMapping("/api/votes")
 public class VoteRestController {
 
     private final VoteService voteService;
 
     //all
     @GetMapping("{id}")
-    public ResponseEntity getOneBallot(@PathVariable Long id) {
+    public ResponseEntity getOneVote(@PathVariable Long id,
+                                       @RequestParam(required = false) Long user) {
         try {
-            return ResponseEntity.ok().body(VoteModel.toModel(voteService.getBallot(id)));
+            var voteModel = VoteModel.toModel(voteService.getBallot(id));
+
+            voteService.checkUser(voteModel, user);
+
+            return ResponseEntity.ok().body(voteModel);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
-    @GetMapping("/votes")
+    @GetMapping("")
     public ResponseEntity getAllVotes(@RequestParam(required = false) Integer page,
                                       @RequestParam(required = false) Integer count,
-                                      @RequestParam(required = false) String find) {
+                                      @RequestParam(required = false) String find,
+                                      @RequestParam(required = false) Long user) {
         try {
-            var votes = voteService.getBallots(false, find);
+            var votes = voteService.getVotes(find);
+            List<VoteModel> votesModels;
 
             if (page != null && count != null)
-                return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));
+                votesModels =  VoteModel.toModel(voteService.doPagination(votes, page, count));
+            else
+                votesModels  = VoteModel.toModel(votes);
 
-            return ResponseEntity.ok(VoteModel.toModel(votes));
+            voteService.checkUser(votesModels, user);
+
+            return ResponseEntity.ok().body(votesModels);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
-    @GetMapping("/surveys")
-    public ResponseEntity getSurveys(@RequestParam(required = false) Integer page,
-                                     @RequestParam(required = false) Integer count,
-                                     @RequestParam(required = false) String find) {
-        try {
-            var votes = voteService.getBallots(true, find);
-
-            if (page != null && count != null)
-                return ResponseEntity.ok(VoteModel.toModel(voteService.doPagination(votes, page, count)));
-
-            return ResponseEntity.ok(VoteModel.toModel(votes));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Произошла ошибка");
-        }
-    }
 
     //admin
     @DeleteMapping("/admin/{id}")
@@ -71,9 +72,9 @@ public class VoteRestController {
     }
 
     @PostMapping("/admin")
-    public ResponseEntity createNewBallot(@RequestBody Vote ballot) {
+    public ResponseEntity createNewBallot(@RequestBody Vote vote) {
         try {
-            voteService.postBallot(ballot);
+            voteService.postVote(vote);
             return ResponseEntity.ok("Успешно создано");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
@@ -81,12 +82,12 @@ public class VoteRestController {
     }
 
     //users
-    @PatchMapping(value = "/user/{id}", params = {"ballot"})
+    @PatchMapping(value = "/user/{id}", params = {"vote"})
     public ResponseEntity putVoice(@PathVariable Long id,
-                                   @RequestParam Long ballot,
+                                   @RequestParam Long vote,
                                    @RequestBody Long[] answers) {
         try {
-            voteService.putVoice(id, ballot, answers);
+            voteService.putVoice(id, vote, answers);
             return ResponseEntity.ok("Ответ сохранен");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");

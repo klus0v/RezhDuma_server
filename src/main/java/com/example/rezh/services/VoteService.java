@@ -7,6 +7,7 @@ import com.example.rezh.entities.User;
 import com.example.rezh.entities.votes.Answer;
 import com.example.rezh.entities.votes.Question;
 import com.example.rezh.entities.votes.Vote;
+import com.example.rezh.models.VoteModel;
 import com.example.rezh.repositories.AnswerRepository;
 import com.example.rezh.repositories.UserRepository;
 import com.example.rezh.repositories.VoteRepository;
@@ -31,14 +32,11 @@ public class VoteService {
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
 
-    public List<Vote> getBallots(Boolean survey, String find) {
+    public List<Vote> getVotes(String find) {
         if (find != null)
-            if (survey)
-                return  voteRepository.findSurveysWithWord("%" + find + "%");
-            else
-                return voteRepository.findVotesWithWord("%" + find + "%");
+            return voteRepository.findVotesWithWord("%" + find + "%");
 
-        return voteRepository.findAllBySurvey(survey);
+        return voteRepository.findAll();
     }
 
     public List<Vote> doPagination(List<Vote> votes, Integer page, Integer count) {
@@ -55,20 +53,18 @@ public class VoteService {
         return voteRepository.getById(id);
     }
 
+    @Transactional
     public void deleteBallot(Long id) {
         voteRepository.deleteById(id);
     }
 
-    public void postBallot(Vote ballot) {
+    public void postVote(Vote ballot) {
         Vote vote = new Vote();
         vote.setTopic(ballot.getTopic());
-        vote.setSurvey(ballot.getSurvey());
         if (ballot.getQuestions() != null)
             addQuestions(ballot.getQuestions(), vote);
         voteRepository.save(vote);
     }
-
-
 
 
     private void addQuestions(List<Question> questions, Vote vote) {
@@ -102,16 +98,18 @@ public class VoteService {
 
 
     @Transactional
-    public void putVoice(Long id, Long ballotId, Long[] answers) {
+    public void putVoice(Long id, Long voteId, Long[] answers) {
+
 
 
         User user = userRepository.getById(id);
-        Vote voting = voteRepository.getById(ballotId);
-
+        Vote voting = voteRepository.getById(voteId);
         if (user.getVotes().contains(voting))
             return;
 
         user.getVotes().add(voting);
+
+
         for (Long answer : answers) {
             Answer currentAnswer = answerRepository.getById(answer);
             Integer count = currentAnswer.getCount() + 1;
@@ -119,5 +117,22 @@ public class VoteService {
             answerRepository.save(currentAnswer);
         }
 
+    }
+
+    public void checkUser(VoteModel vote, Long userID) {
+        if (userID == null){
+            vote.setCanVote(false);
+            return;
+        }
+        User user = userRepository.getById(userID);
+        Vote voting = voteRepository.getById(vote.getId());
+
+        vote.setCanVote(!user.getVotes().contains(voting));
+    }
+
+    public void checkUser(List<VoteModel> votes, Long userID) {
+        for (VoteModel vote : votes) {
+            checkUser(vote, userID);
+        }
     }
 }

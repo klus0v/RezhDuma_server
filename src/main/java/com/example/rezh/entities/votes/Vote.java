@@ -23,8 +23,6 @@ public class Vote {
 
     private String topic;
 
-    private Boolean survey;
-
     @DateTimeFormat()
     private LocalDateTime voteDate = LocalDateTime.now();
 

@@ -20,6 +20,7 @@ public class VoteModel {
     private Long id;
     private String topic;
     private LocalDateTime votingDate;
+    private Boolean canVote;
     private List<QuestionModel> questions;
 
     @Data
