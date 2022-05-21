@@ -6,7 +6,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
@@ -22,23 +26,19 @@ public class FileStore {
         this.s3 = s3;
     }
 
-    public void save(String path,
-                     String fileName,
-                     Optional<Map<String, String>> optionalMetadata,
-                     InputStream inputStream) {
-        ObjectMetadata metadata = new ObjectMetadata();
+    public void save(String path, String fileName, MultipartFile inputFile) {
 
-        optionalMetadata.ifPresent(map -> {
-            if (!map.isEmpty()) {
-                map.forEach(metadata::addUserMetadata);
-            }
-        });
 
         try {
-            s3.putObject(path, fileName, inputStream, metadata);
+            final ObjectMetadata metaData = new ObjectMetadata();
+            metaData.setContentType(inputFile.getContentType());
+            metaData.setContentLength(inputFile.getSize());
+
+            s3.putObject(path, fileName, inputFile.getInputStream(), metaData);
         } catch (AmazonServiceException e) {
             throw new IllegalStateException("Failed to store file to s3", e);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
 }

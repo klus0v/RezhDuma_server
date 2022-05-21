@@ -139,17 +139,9 @@ public class AppealService {
     private void addFiles(ArrayList<MultipartFile> files, Appeal appeal) throws IOException {
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
-
-                Map<String, String> metadata = extractMetadata(file);
                 String path = "rezh3545";
                 String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
-
-                try {
-                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-
+                fileStore.save(path, filename, file);
 
                 File appealFile = new File();
                 appealFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
@@ -157,13 +149,6 @@ public class AppealService {
                 appeal.addFile(appealFile);
             }
         }
-    }
-
-    private Map<String, String> extractMetadata(MultipartFile file) {
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("Content-Type", file.getContentType());
-        metadata.put("Content-Length", String.valueOf(file.getSize()));
-        return metadata;
     }
 
     public List<Appeal> doPagination(List<Appeal> appeals, Integer page, Integer count) {

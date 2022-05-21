@@ -117,12 +117,8 @@ public class NewsService {
                 Map<String, String> metadata = extractMetadata(file);
                 String path = "rezh3545";
                 String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+                fileStore.save(path, filename, file);
 
-                try {
-                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
 
 
                 File newsFile = new File();

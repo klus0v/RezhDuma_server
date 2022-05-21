@@ -91,16 +91,9 @@ public class DocumentService {
 
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
-                Map<String, String> metadata = extractMetadata(file);
                 String path = "rezh3545";
                 String filename = "uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
-
-                try {
-                    fileStore.save(path, filename, Optional.of(metadata), file.getInputStream());
-                } catch (IOException e) {
-                    throw new IllegalStateException(e);
-                }
-
+                fileStore.save(path, filename, file);
 
                 File documentFile = new File();
                 documentFile.setFileName("https://storage.yandexcloud.net/rezh3545/" + filename);
@@ -108,12 +101,5 @@ public class DocumentService {
                 document.addFile(documentFile);
             }
         }
-    }
-
-    private Map<String, String> extractMetadata(MultipartFile file) {
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("Content-Type", file.getContentType());
-        metadata.put("Content-Length", String.valueOf(file.getSize()));
-        return metadata;
     }
 }
