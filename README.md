@@ -260,7 +260,7 @@
 >
 
 > Доступно жителю                   
->`PATCH:` `api/votes/user/Y?votes=X` Ответить юзеру с id=Y на голосование с id=X,
+>`PATCH:` `api/votes/user/Y?vote=X` Ответить юзеру с id=Y на голосование с id=X,
 >
 
 >  Доступно депутату   
@@ -670,9 +670,11 @@
      
   	{
       "topic": "Тема опроса",
+      "expirationDate": "2022-08-22T22:41:38.502031400",
       "questions": [
           {
               "question": "Вопрос 1",
+              "checkbox" false,
               "answers": [
                   {
                       "answer": "ответ к нему"
@@ -684,10 +686,17 @@
           },
           {
               "question": "Вопрос 2",
+              "checkbox" true,
               "answers": [
                   {
                       "answer": "ответ на вопрос 2"
-                  }
+                  },
+                  {
+                      "answer": "еще ответ на вопрос 2"
+                  },
+                  {
+                      "answer": "и еще ответ на вопрос 2"
+                  },
               ]
           }
       ]
