@@ -11,6 +11,7 @@ import com.example.rezh.repositories.RoleRepository;
 import com.example.rezh.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,6 +29,9 @@ import java.util.UUID;
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
+    @Value("${confirm.link}")
+    private String confirmLink;
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -38,6 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
+
 
         if (user == null) {
             log.error("User {} not found in the database", email);
@@ -68,8 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 LocalDateTime.now().plusMinutes(15),
                 user
         );
-
-        String link = "http://51.250.111.89:8080/api/registration/confirm?token=" + token;
+        String link = confirmLink + token;
         emailSender.send(
                 user.getEmail(), user.getFirstName() + ", для подтверждения почты, передите поссылке: " + link);
 
@@ -99,10 +103,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> getUsers() {
         log.info("Fetching all user");
-        return userRepository.findAll();
-    }
-
-    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 }
