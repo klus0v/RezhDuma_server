@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -61,6 +62,7 @@ public class VoteService {
     public void postVote(Vote ballot) {
         Vote vote = new Vote();
         vote.setTopic(ballot.getTopic());
+        vote.setExpirationDate(ballot.getExpirationDate());
         if (ballot.getQuestions() != null)
             addQuestions(ballot.getQuestions(), vote);
         voteRepository.save(vote);
@@ -73,6 +75,7 @@ public class VoteService {
 
                 Question voteQuestion = new Question();
                 voteQuestion.setQuestion(question.getQuestion());
+                voteQuestion.setCheckbox(question.getCheckbox());
 
                 if (question.getAnswers() != null)
                     addAnswers(question.getAnswers(), voteQuestion);
@@ -105,6 +108,8 @@ public class VoteService {
         User user = userRepository.getById(id);
         Vote voting = voteRepository.getById(voteId);
         if (user.getVotes().contains(voting))
+            return;
+        if (voting.getExpirationDate().compareTo(LocalDateTime.now()) <= 0)
             return;
 
         user.getVotes().add(voting);

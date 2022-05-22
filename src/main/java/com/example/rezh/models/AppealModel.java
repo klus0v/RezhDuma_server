@@ -40,13 +40,13 @@ public class AppealModel {
         appeal.setDistrict(appealEntity.getDistrictTag());
         appeal.setTopic(appealEntity.getTopicTag());
         appeal.setResponseDate(appealEntity.getResponseDate());
-        appeal.setFilesNames(new ArrayList<>());
+
 
         var userName = appealEntity.getUser().getLastName() + " " + appealEntity.getUser().getFirstName();
-
         if (addUser)
             appeal.setRequesterName(userName);
 
+        appeal.setFilesNames(new ArrayList<>());
         var files = appealEntity.getFiles();
         for (File file : files) {
             appeal.filesNames.add(file.getFileName());

@@ -19,8 +19,9 @@ public class VoteModel {
 
     private Long id;
     private String topic;
-    private LocalDateTime votingDate;
     private Boolean canVote;
+    private LocalDateTime votingDate;
+    private LocalDateTime expirationDate;
     private List<QuestionModel> questions;
 
     @Data
@@ -34,6 +35,7 @@ public class VoteModel {
     private static class QuestionModel {
         private Long id;
         private String question;
+        private Boolean checkbox;
         private List<AnswerModel> answers;
     }
 
@@ -43,6 +45,7 @@ public class VoteModel {
         vote.setId(voteEntity.getId());
         vote.setTopic(voteEntity.getTopic());
         vote.setVotingDate(voteEntity.getVoteDate());
+        vote.setExpirationDate(voteEntity.getExpirationDate());
 
         vote.setQuestions(new ArrayList<QuestionModel>());
 
@@ -60,6 +63,7 @@ public class VoteModel {
             }
             questionModel.setId(question.getId());
             questionModel.setQuestion(question.getQuestion());
+            questionModel.setCheckbox(question.getCheckbox());
             questionModel.setAnswers(answerModels);
 
             vote.questions.add(questionModel);

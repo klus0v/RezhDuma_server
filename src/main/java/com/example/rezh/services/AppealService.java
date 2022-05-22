@@ -1,6 +1,10 @@
 package com.example.rezh.services;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
 import com.example.rezh.entities.News;
@@ -23,6 +27,12 @@ import java.util.*;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class AppealService {
+
+    @Value("${secret.key}")
+    private String secretKey;
+
+    @Value("${token.start}")
+    private String tokenStart;
 
     private final AppealRepository appealRepository;
     private final UserRepository userRepository;
@@ -108,7 +118,7 @@ public class AppealService {
         }
         if (userRepository.findById(id).isPresent()) {
             User responsible = userRepository.getById(id);
-            appeal.setResponsibleName(responsible.getFirstName() + " " + responsible.getLastName());
+            appeal.setResponsibleName(responsible.getLastName() + responsible.getFirstName());
         }
 
     }
@@ -122,13 +132,18 @@ public class AppealService {
 
 
 
-    private boolean CheckUser(Long id, String token) {
-        var emailString = new String(Base64.getDecoder().decode(token.substring(42, 150)));
-        var endIndex = emailString.indexOf(",") - 1;
+    private boolean CheckUser(Long id, String tokenString) {
+        String token = tokenString.substring(tokenStart.length());
+        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String tokenEmail = decodedJWT.getSubject();
+
+
 
 
         String email = userRepository.getById(id).getEmail();
-        String tokenEmail = emailString.substring(8, endIndex);
+
 
         return email.equals(tokenEmail);
     }
@@ -136,7 +151,7 @@ public class AppealService {
 
 
 
-    private void addFiles(ArrayList<MultipartFile> files, Appeal appeal) throws IOException {
+    private void addFiles(ArrayList<MultipartFile> files, Appeal appeal) {
         for (MultipartFile file : files) {
             if (file != null && !Objects.requireNonNull(file.getOriginalFilename()).isEmpty()) {
                 String path = "rezh3545";

@@ -26,6 +26,9 @@ public class Vote {
     @DateTimeFormat()
     private LocalDateTime voteDate = LocalDateTime.now();
 
+    @DateTimeFormat()
+    private LocalDateTime expirationDate;
+
     public Vote(String topic) {
         this.topic = topic;
     }

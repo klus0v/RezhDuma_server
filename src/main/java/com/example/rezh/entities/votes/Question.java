@@ -30,6 +30,8 @@ public class Question {
 
     private String question;
 
+    private Boolean checkbox;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Vote vote;
 
