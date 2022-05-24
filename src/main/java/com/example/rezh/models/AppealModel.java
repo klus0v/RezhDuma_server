@@ -3,6 +3,7 @@ package com.example.rezh.models;
 
 import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
+import com.example.rezh.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class AppealModel {
     private String type;
     private String district;
     private String topic;
-    private String requesterName;
+    private UserModel requester;
     private String responsibleName;
     private String response;
     private LocalDateTime responseDate;
@@ -42,9 +43,9 @@ public class AppealModel {
         appeal.setResponseDate(appealEntity.getResponseDate());
 
 
-        var userName = appealEntity.getUser().getLastName() + " " + appealEntity.getUser().getFirstName();
+        var user = UserModel.toModel(appealEntity.getUser());
         if (addUser)
-            appeal.setRequesterName(userName);
+            appeal.setRequester(user);
 
         appeal.setFilesNames(new ArrayList<>());
         var files = appealEntity.getFiles();

@@ -15,6 +15,7 @@ import com.example.rezh.registration.token.ConfirmationToken;
 import com.example.rezh.registration.token.ConfirmationTokenService;
 import com.example.rezh.repositories.RoleRepository;
 import com.example.rezh.repositories.UserRepository;
+import com.example.rezh.rest.UserRestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -82,10 +80,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return true;
     }
 
-    public void enableUser(String email) {
-        userRepository.enableUser(email);
-    }
-
     @Override
     public void addRoleToUser(String email, String roleName) {
         log.info("A new role {} to user {}", roleName, email);
@@ -106,6 +100,58 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findAll();
     }
 
+
+    public User getUser(Long id) throws UserNotFoundException {
+        if (id == null || userRepository.findById(id).isEmpty())
+            throw new UserNotFoundException("Юзер не найден");
+        return userRepository.getById(id);
+    }
+
+    public void editUser(Long userID, User user)  throws UserNotFoundException {
+
+        if (userID == null || userRepository.findById(userID).isEmpty())
+            throw new UserNotFoundException("Юзер не найден");
+
+        User currentUser = userRepository.getById(userID);
+        if (!user.getFirstName().isEmpty())
+            currentUser.setFirstName(user.getFirstName());
+        if (!user.getLastName().isEmpty())
+            currentUser.setLastName(user.getLastName());
+        if (!user.getPatronymic().isEmpty())
+            currentUser.setPatronymic(user.getPatronymic());
+        if (!user.getPhone().isEmpty())
+            currentUser.setPhone(user.getPhone());
+
+        if (!user.getEmail().isEmpty() && !Objects.equals(user.getEmail(), currentUser.getEmail())) {
+            currentUser.setEmail(user.getEmail());
+            currentUser.setEnable(false);
+            confirmEmail(currentUser);
+        }
+
+        userRepository.save(currentUser);
+    }
+
+    public void editPassword(Long userID, String password, String newPassword) throws UserNotFoundException {
+
+        if (userID == null || userRepository.findById(userID).isEmpty())
+            throw new UserNotFoundException("Юзер не найден");
+
+
+        User user = userRepository.getById(userID);
+
+
+
+        if (passwordEncoder.matches(password, user.getPassword()))
+            user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+    }
+
+    public void enableUser(String email) {
+        userRepository.enableUser(email);
+    }
+
+
     public Long GetUserId(String tokenString) {
 
         if (tokenString.isEmpty())
@@ -123,35 +169,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findByEmail(tokenEmail);
 
         return user.getId();
-    }
-
-    public User getUser(Long id) throws UserNotFoundException {
-        if (id == null || userRepository.findById(id).isEmpty())
-            throw new UserNotFoundException("Юзер не найден");
-        return userRepository.getById(id);
-    }
-
-    public void editUser(Long userID, User user)  throws UserNotFoundException {
-
-        if (userID == null || userRepository.findById(userID).isEmpty())
-            throw new UserNotFoundException("Юзер не найден");
-
-
-        User currentUser = userRepository.getById(userID);
-        if (!user.getFirstName().isEmpty())
-            currentUser.setFirstName(user.getFirstName());
-        if (!user.getLastName().isEmpty())
-            currentUser.setLastName(user.getLastName());
-        if (!user.getPatronymic().isEmpty())
-            currentUser.setPatronymic(user.getPatronymic());
-        if (!user.getPhone().isEmpty())
-            currentUser.setPhone(user.getPhone());
-
-        if (!user.getEmail().isEmpty()) {
-            currentUser.setEmail(user.getEmail());
-            currentUser.setEnable(false);
-            confirmEmail(currentUser);
-        }
     }
 
     private void confirmEmail(User user) {

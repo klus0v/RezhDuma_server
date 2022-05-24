@@ -1,22 +1,16 @@
 package com.example.rezh.rest;
 
 
-import com.example.rezh.entities.Appeal;
 import com.example.rezh.entities.User;
-import com.example.rezh.exceptions.HistoryNotFoundException;
 import com.example.rezh.exceptions.UserNotFoundException;
-import com.example.rezh.models.AppealModel;
-import com.example.rezh.models.HistoryModel;
 import com.example.rezh.models.UserModel;
-import com.example.rezh.services.AppealService;
 import com.example.rezh.services.UserServiceImpl;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -38,7 +32,7 @@ public class UserRestController {
         }
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/edit/profile")
     public ResponseEntity edutUserProfile(@RequestHeader(name = "Authorization") String token,
                                           @RequestBody User user) {
         try {
@@ -47,6 +41,19 @@ public class UserRestController {
             return ResponseEntity.ok().body("Данные успешно измененны");
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e ) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @PatchMapping("/edit/password")
+    public ResponseEntity edutUserPassword(@RequestHeader(name = "Authorization") String token,
+                                           @RequestParam String password,
+                                           @RequestParam String newPassword) {
+        try {
+            var userID = userService.GetUserId(token);
+            userService.editPassword(userID,password, newPassword);
+            return ResponseEntity.ok().body("Пароль успешно изменен");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
