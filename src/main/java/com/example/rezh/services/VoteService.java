@@ -32,6 +32,7 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
+    private final UserServiceImpl userService;
 
     public List<Vote> getVotes(String find) {
         if (find != null)
@@ -101,9 +102,9 @@ public class VoteService {
 
 
     @Transactional
-    public void putVoice(Long id, Long voteId, Long[] answers) {
+    public void putVoice(String token, Long voteId, Long[] answers) {
 
-
+        var id = userService.GetUserId(token);
 
         User user = userRepository.getById(id);
         Vote voting = voteRepository.getById(voteId);

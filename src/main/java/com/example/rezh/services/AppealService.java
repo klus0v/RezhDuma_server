@@ -40,31 +40,36 @@ public class AppealService {
     @Autowired
     private final FileStore fileStore;
 
-
     public List<Appeal> getFrequents(String find, String type, String district, String topic) {
         return appealRepository.findTopAppeals("%" + find + "%", "%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
     }
 
-    public List<Appeal> getAppeals(Long id, String token, Boolean answered, String find, String type, String district, String topic) throws AuthenticationException {
-        if (!CheckUser(id, token))
+
+
+    public Appeal getUserAppeal(String token, Long appealID) throws AuthenticationException {
+        var id = userService.GetUserId(token);
+        if (!Objects.equals(appealRepository.getById(appealID).getUser().getId(), id))
             throw new AuthenticationException("Нет прав");
+        return getAppeal(appealID);
+    }
+
+    public List<Appeal> getAppeals(String token, Boolean answered, String find, String type, String district, String topic) throws AuthenticationException {
+        var id = userService.GetUserId(token);
         if (answered != null)
             return  appealRepository.findUserAppealsAnswered(id, "%" + find + "%", answered, "%" + type + "%", "%" + district + "%", "%" + topic + "%");
         return  appealRepository.findUserAppeals(id,"%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
     }
 
-
-    public void deleteAppeal(Long id, String token, Long appealID) throws AuthenticationException {
-        if (!CheckUser(id, token) || !Objects.equals(appealRepository.findById(appealID).get().getUser().getId(), id))
+    public void deleteAppeal(String token, Long appealID) throws AuthenticationException {
+        var id = userService.GetUserId(token);
+        if (!Objects.equals(appealRepository.getById(appealID).getUser().getId(), id))
             throw new AuthenticationException("Нет прав");
         appealRepository.deleteById(appealID);
     }
 
-    public void postAppeal(Long id, String token, String type, String district, String topic, String text, ArrayList<MultipartFile> files) throws IOException, AuthenticationException {
+    public void postAppeal(String token, String type, String district, String topic, String text, ArrayList<MultipartFile> files) throws IOException, AuthenticationException {
 
-        if (!CheckUser(id, token))
-            throw new AuthenticationException("Нет прав");
-
+        var id = userService.GetUserId(token);
         User user = userRepository.getById(id);
 
         Appeal appeal = new Appeal();
@@ -80,9 +85,10 @@ public class AppealService {
         userService.saveUser(user);
     }
 
-    public void editAppeal(Long id, String token, Long appealID, String type, String district, String topic, String text, ArrayList<MultipartFile> files) throws IOException, AuthenticationException {
+    public void editAppeal(String token, Long appealID, String type, String district, String topic, String text, ArrayList<MultipartFile> files) throws IOException, AuthenticationException {
 
-        if (!CheckUser(id, token) || !Objects.equals(appealRepository.findById(appealID).get().getUser().getId(), id))
+        var id = userService.GetUserId(token);
+        if (!Objects.equals(appealRepository.getById(appealID).getUser().getId(), id))
             throw new AuthenticationException("Нет прав");
 
         Appeal appeal = appealRepository.getById(appealID);
@@ -101,10 +107,6 @@ public class AppealService {
 
 
 
-
-    public Appeal getAppeal(Long appealID) {
-        return appealRepository.getById(appealID);
-    }
 
     public void setAnswer(Long appealID, Long id, String response, Boolean frequent) {
         Appeal appeal = appealRepository.getById(appealID);
@@ -129,27 +131,9 @@ public class AppealService {
         return  appealRepository.findAllAppeals("%" + find + "%", "%" + type + "%", "%" + district + "%", "%" + topic + "%");
     }
 
-
-
-
-    private boolean CheckUser(Long id, String tokenString) {
-        String token = tokenString.substring(tokenStart.length());
-        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(token);
-        String tokenEmail = decodedJWT.getSubject();
-
-
-
-
-        String email = userRepository.getById(id).getEmail();
-
-
-        return email.equals(tokenEmail);
+    public Appeal getAppeal(Long appealID) {
+        return appealRepository.getById(appealID);
     }
-
-
-
 
     private void addFiles(ArrayList<MultipartFile> files, Appeal appeal) {
         for (MultipartFile file : files) {

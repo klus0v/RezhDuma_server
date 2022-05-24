@@ -39,9 +39,18 @@ public class AppealRestController {
     }
 
     //users
-    @GetMapping(value = "/user/{id}")
-    public ResponseEntity getUserAppeals(@PathVariable Long id,
-                                         @RequestHeader(name = "Authorization") String token,
+    @GetMapping(value = "user/{appealID}")
+    public ResponseEntity getUserOneAppeal(@RequestHeader(name = "Authorization") String token,
+                                           @PathVariable Long appealID) {
+        try {
+            return ResponseEntity.ok().body(AppealModel.toModel(appealService.getUserAppeal(token, appealID), false));
+        } catch (Exception e ) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @GetMapping(value = "/user")
+    public ResponseEntity getUserAppeals(@RequestHeader(name = "Authorization") String token,
                                          @RequestParam(required = false) Boolean answered,
                                          @RequestParam(required = false, defaultValue = "") String find,
                                          @RequestParam(required = false, defaultValue = "") String type,
@@ -50,7 +59,7 @@ public class AppealRestController {
                                          @RequestParam(required = false) Integer page,
                                          @RequestParam(required = false) Integer count) {
         try {
-            List<Appeal> appeals = appealService.getAppeals(id, token, answered, find,  type, district, topic);
+            List<Appeal> appeals = appealService.getAppeals(token, answered, find,  type, district, topic);
 
             if (page != null && count != null)
                 return ResponseEntity.ok(AppealModel.toModel(appealService.doPagination(appeals, page, count), false));
@@ -61,21 +70,19 @@ public class AppealRestController {
         }
     }
 
-    @DeleteMapping(value = "/user/{id}", params = {"appeal"})
-    public ResponseEntity deleteUserAppeal(@PathVariable Long id,
-                                           @RequestHeader(name = "Authorization") String token,
+    @DeleteMapping(value = "/user", params = {"appeal"})
+    public ResponseEntity deleteUserAppeal(@RequestHeader(name = "Authorization") String token,
                                            @RequestParam Long appeal) {
         try {
-            appealService.deleteAppeal(id, token, appeal);
+            appealService.deleteAppeal(token, appeal);
             return ResponseEntity.ok("Обращение удалено");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
-    @PostMapping(value = "/user/{id}")
-    public ResponseEntity postAppeal(@PathVariable Long id,
-                                     @RequestHeader(name = "Authorization") String token,
+    @PostMapping(value = "/user")
+    public ResponseEntity postAppeal(@RequestHeader(name = "Authorization") String token,
                                      @RequestParam(required = false) String type,
                                      @RequestParam(required = false) String district,
                                      @RequestParam(required = false) String topic,
@@ -83,16 +90,15 @@ public class AppealRestController {
                                      @RequestParam(required = false) ArrayList<MultipartFile> files) {
 
         try {
-            appealService.postAppeal(id, token, type, district, topic, text, files);
+            appealService.postAppeal(token, type, district, topic, text, files);
             return ResponseEntity.ok("Обращение создано");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 
-    @PatchMapping(value = "/user/{id}", params = {"appeal"})
-    public ResponseEntity editUserAppeal(@PathVariable Long id,
-                                         @RequestHeader(name = "Authorization") String token,
+    @PatchMapping(value = "/user", params = {"appeal"})
+    public ResponseEntity editUserAppeal(@RequestHeader(name = "Authorization") String token,
                                          @RequestParam Long appeal,
                                          @RequestParam(required = false) String type,
                                          @RequestParam(required = false) String district,
@@ -101,7 +107,7 @@ public class AppealRestController {
                                          @RequestParam(required = false) ArrayList<MultipartFile> files) {
 
         try {
-            appealService.editAppeal(id, token, appeal, type, district, topic, text, files);
+            appealService.editAppeal(token, appeal, type, district, topic, text, files);
             return ResponseEntity.ok("Обращение изменено");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");

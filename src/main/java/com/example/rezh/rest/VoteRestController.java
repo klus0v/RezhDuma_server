@@ -3,6 +3,7 @@ package com.example.rezh.rest;
 
 import com.example.rezh.entities.votes.Vote;
 import com.example.rezh.models.VoteModel;
+import com.example.rezh.services.UserServiceImpl;
 import com.example.rezh.services.VoteService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,17 @@ import static com.amazonaws.services.elasticbeanstalk.model.ConfigurationOptionV
 public class VoteRestController {
 
     private final VoteService voteService;
+    private final UserServiceImpl userService;
 
     //all
     @GetMapping("{id}")
     public ResponseEntity getOneVote(@PathVariable Long id,
-                                       @RequestParam(required = false) Long user) {
+                                     @RequestHeader(name = "Authorization", required = false) String token) {
         try {
             var voteModel = VoteModel.toModel(voteService.getBallot(id));
 
-            voteService.checkUser(voteModel, user);
+            var userID = userService.GetUserId(token);
+            voteService.checkUser(voteModel, userID);
 
             return ResponseEntity.ok().body(voteModel);
         } catch (Exception e) {
@@ -37,11 +40,11 @@ public class VoteRestController {
         }
     }
 
-    @GetMapping("")
+    @GetMapping()
     public ResponseEntity getAllVotes(@RequestParam(required = false) Integer page,
                                       @RequestParam(required = false) Integer count,
                                       @RequestParam(required = false) String find,
-                                      @RequestParam(required = false) Long user) {
+                                      @RequestHeader(name = "Authorization", required = false) String token) {
         try {
             var votes = voteService.getVotes(find);
             List<VoteModel> votesModels;
@@ -51,7 +54,8 @@ public class VoteRestController {
             else
                 votesModels  = VoteModel.toModel(votes);
 
-            voteService.checkUser(votesModels, user);
+            var userID = userService.GetUserId(token);
+            voteService.checkUser(votesModels, userID);
 
             return ResponseEntity.ok().body(votesModels);
         } catch (Exception e) {
@@ -82,12 +86,12 @@ public class VoteRestController {
     }
 
     //users
-    @PatchMapping(value = "/user/{id}", params = {"vote"})
-    public ResponseEntity putVoice(@PathVariable Long id,
+    @PatchMapping(value = "/user", params = {"vote"})
+    public ResponseEntity putVoice(@RequestHeader(name = "Authorization") String token,
                                    @RequestParam Long vote,
                                    @RequestBody Long[] answers) {
         try {
-            voteService.putVoice(id, vote, answers);
+            voteService.putVoice(token, vote, answers);
             return ResponseEntity.ok("Ответ сохранен");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
