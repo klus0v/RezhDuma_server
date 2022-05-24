@@ -1,10 +1,16 @@
 package com.example.rezh.services;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.email.EmailSender;
 import com.example.rezh.entities.Role;
 
 import com.example.rezh.entities.User;
+import com.example.rezh.exceptions.HistoryNotFoundException;
+import com.example.rezh.exceptions.UserNotFoundException;
 import com.example.rezh.registration.token.ConfirmationToken;
 import com.example.rezh.registration.token.ConfirmationTokenService;
 import com.example.rezh.repositories.RoleRepository;
@@ -28,6 +34,12 @@ import java.util.UUID;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
+
+    @Value("${secret.key}")
+    private String secretKey;
+
+    @Value("${token.start}")
+    private String tokenStart;
 
     @Value("${confirm.link}")
     private String confirmLink;
@@ -65,19 +77,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
-        String token = UUID.randomUUID().toString();
-
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
-                user
-        );
-        String link = confirmLink + token;
-        emailSender.send(
-                user.getEmail(), user.getFirstName() + ", для подтверждения почты, передите поссылке: " + link);
-
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
+        confirmEmail(user);
 
         return true;
     }
@@ -104,5 +104,69 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<User> getUsers() {
         log.info("Fetching all user");
         return userRepository.findAll();
+    }
+
+    public Long GetUserId(String tokenString) {
+
+        if (tokenString.isEmpty())
+            return null;
+
+        String token = tokenString.substring(tokenStart.length());
+        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String tokenEmail = decodedJWT.getSubject();
+
+        if (userRepository.findByEmail(tokenEmail) == null)
+            throw new UsernameNotFoundException("Пользователь не найден");
+
+        User user = userRepository.findByEmail(tokenEmail);
+
+        return user.getId();
+    }
+
+    public User getUser(Long id) throws UserNotFoundException {
+        if (id == null || userRepository.findById(id).isEmpty())
+            throw new UserNotFoundException("Юзер не найден");
+        return userRepository.getById(id);
+    }
+
+    public void editUser(Long userID, User user)  throws UserNotFoundException {
+
+        if (userID == null || userRepository.findById(userID).isEmpty())
+            throw new UserNotFoundException("Юзер не найден");
+
+
+        User currentUser = userRepository.getById(userID);
+        if (!user.getFirstName().isEmpty())
+            currentUser.setFirstName(user.getFirstName());
+        if (!user.getLastName().isEmpty())
+            currentUser.setLastName(user.getLastName());
+        if (!user.getPatronymic().isEmpty())
+            currentUser.setPatronymic(user.getPatronymic());
+        if (!user.getPhone().isEmpty())
+            currentUser.setPhone(user.getPhone());
+
+        if (!user.getEmail().isEmpty()) {
+            currentUser.setEmail(user.getEmail());
+            currentUser.setEnable(false);
+            confirmEmail(currentUser);
+        }
+    }
+
+    private void confirmEmail(User user) {
+        String token = UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                user
+        );
+        String link = confirmLink + token;
+        emailSender.send(
+                user.getEmail(), user.getFirstName() + ", для подтверждения почты, передите поссылке: " + link);
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
     }
 }
