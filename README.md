@@ -308,13 +308,16 @@
 
 >`GET:` `api/users/profile` Получить данные о юзере  
 
-> `PUT:` `api/users/edit` Отредактировать данные юзера
+> `PUT:` `api/users/edit/profile` Отредактировать данные юзера  
+ 
+> `PATCH:` `api/users/edit/password` Изменить пароль юзера
 
 
-| тип | формат тела запроса |формат тела ответа| заголовок запроса   |
-|-----|---------------------| ------       |---------------------|
-| GET | -                   | JSON         | Authorization: token |
-| PUT | JSON                | JSON         | Authorization: token                    |
+| тип   | формат тела запроса | формат тела ответа | заголовок запроса   |
+|-------|---------------------|--------------------|---------------------|
+| GET   | -                   | JSON               | Authorization: token |
+| PUT   | JSON                | JSON               | Authorization: token |
+| PATCH | form-data           | -                  | Authorization: token |
 
 <br/>  
 <br/>
@@ -741,8 +744,7 @@
     ```
        GET: api/users/profile
      
-       Вернет Json, с объектом юезра:
-        (пример)
+       response(json):
         {
           "id": 1,
           "email": "почта",
@@ -759,9 +761,12 @@
     ```
   - Отредактировать данные юзера
     ```
-       PUT: api/users/edit
+    Headers: 
+       Authorization: 'Rezh {token}'
+    
+       PUT: api/users/edit/profile
        
-        requst (json) :
+        request (json) :
         {
           "email": "почта",
           "phone": "телефон",
@@ -771,6 +776,17 @@
         }
     	
     ```
+- Изменить пароль юзера
+  ``` 
+  Headers: 
+       Authorization: 'Rezh {token}'
+     
+     PATCH: api/users/edit/password
+       
+      request (form-data) :
+          password: "Тут старый пароль"
+          newPassword: "Тут новый пароль"
+  ```
 
 <br/>
 <br/>
