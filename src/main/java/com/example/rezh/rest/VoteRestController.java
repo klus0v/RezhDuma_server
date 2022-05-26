@@ -27,7 +27,7 @@ public class VoteRestController {
     //all
     @GetMapping("{id}")
     public ResponseEntity getOneVote(@PathVariable Long id,
-                                     @RequestHeader(name = "Authorization", required = false) String token) {
+                                     @RequestHeader(name = "Authorization", required = false, defaultValue = "") String token) {
         try {
             var voteModel = VoteModel.toModel(voteService.getBallot(id));
 
@@ -40,11 +40,11 @@ public class VoteRestController {
         }
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity getAllVotes(@RequestParam(required = false) Integer page,
                                       @RequestParam(required = false) Integer count,
                                       @RequestParam(required = false) String find,
-                                      @RequestHeader(name = "Authorization", required = false) String token) {
+                                      @RequestHeader(name = "Authorization", required = false, defaultValue = "") String token) {
         try {
             var votes = voteService.getVotes(find);
             List<VoteModel> votesModels;
