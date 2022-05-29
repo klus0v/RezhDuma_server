@@ -110,7 +110,8 @@ public class VoteService {
         Vote voting = voteRepository.getById(voteId);
         if (user.getVotes().contains(voting))
             return;
-        if (voting.getExpirationDate().compareTo(LocalDateTime.now()) <= 0)
+
+        if (voting.getExpirationDate() != null && voting.getExpirationDate().compareTo(LocalDateTime.now()) <= 0)
             return;
 
         user.getVotes().add(voting);
