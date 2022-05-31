@@ -66,6 +66,10 @@ public class User{
         appeal.setUser(null);
     }
 
-    @ManyToMany(fetch = LAZY)
-    private Collection<Vote> votes = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "users_votes ",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "vote_id"))
+    private List<Vote> votes = new ArrayList<>();
 }

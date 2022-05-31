@@ -1,6 +1,7 @@
 package com.example.rezh.entities.votes;
 
 
+import com.example.rezh.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Data
 @Entity
@@ -49,4 +52,7 @@ public class Vote {
         questions.remove(question);
         question.setVote(null);
     }
+
+    @ManyToMany(mappedBy = "votes")
+    private List<User> users = new ArrayList<>();
 }
