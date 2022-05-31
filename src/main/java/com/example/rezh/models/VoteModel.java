@@ -36,6 +36,7 @@ public class VoteModel {
         private Long id;
         private String question;
         private Boolean checkbox;
+        private Integer totalCount;
         private List<AnswerModel> answers;
     }
 
@@ -53,8 +54,10 @@ public class VoteModel {
 
         for (Question question : questions) {
             QuestionModel questionModel = new QuestionModel();
+            questionModel.setTotalCount(0);
             List<AnswerModel> answerModels = new ArrayList<>();
             for (Answer answer: question.getAnswers()) {
+                questionModel.totalCount += answer.getCount();
                 AnswerModel answerModel = new AnswerModel();
                 answerModel.setId(answer.getId());
                 answerModel.setAnswer(answer.getAnswer());
