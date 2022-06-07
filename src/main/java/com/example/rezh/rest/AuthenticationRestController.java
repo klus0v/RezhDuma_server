@@ -68,7 +68,7 @@ public class AuthenticationRestController {
                 User user = userService.getUser(email);
                 String access_token = JWT.create()
                         .withSubject(user.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 15 * 24 * 60 * 60 * 1000)) //15 дней
                         .withIssuer(request.getRequestURI())
                         .withClaim("roles", user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
                         .sign(algorithm);
