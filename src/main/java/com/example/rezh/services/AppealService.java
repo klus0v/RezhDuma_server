@@ -120,7 +120,7 @@ public class AppealService {
         }
         if (userRepository.findById(id).isPresent()) {
             User responsible = userRepository.getById(id);
-            appeal.setResponsibleName(responsible.getLastName() + responsible.getFirstName());
+            appeal.setResponsibleName(responsible.getLastName() + " " + responsible.getFirstName());
         }
 
     }
