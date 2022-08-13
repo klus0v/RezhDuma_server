@@ -1,6 +1,5 @@
 package com.example.rezh.email;
 
-
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class EmailService implements EmailSender{
             helper.setText(email, true);
             helper.setTo(to);
             helper.setSubject("Подтвердите вашу почту");
-            helper.setFrom("rezh.government@yandex.ru");
+            helper.setFrom("rezhduma@yandex.ru");
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             LOGGER.error("failed to send email", e);

@@ -1,21 +1,13 @@
 package com.example.rezh.services;
 
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.rezh.entities.File;
 import com.example.rezh.entities.Appeal;
-import com.example.rezh.entities.News;
 import com.example.rezh.entities.User;
 import com.example.rezh.repositories.AppealRepository;
 import com.example.rezh.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,12 +19,6 @@ import java.util.*;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class AppealService {
-
-    @Value("${secret.key}")
-    private String secretKey;
-
-    @Value("${token.start}")
-    private String tokenStart;
 
     private final AppealRepository appealRepository;
     private final UserRepository userRepository;

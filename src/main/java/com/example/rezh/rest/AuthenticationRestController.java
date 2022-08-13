@@ -33,12 +33,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequiredArgsConstructor
 public class AuthenticationRestController {
 
-    @Value("${secret.key}")
-    private String secretKey;
-
-    @Value("${token.start}")
-    private String tokenStart;
-
     private final UserService userService;
     private final RegistrationService registrationService;
 
@@ -58,10 +52,10 @@ public class AuthenticationRestController {
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith(tokenStart)) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Rezh ")) {
             try {
-                String refresh_token = authorizationHeader.substring(tokenStart.length());
-                Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+                String refresh_token = authorizationHeader.substring("Rezh ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refresh_token);
                 String email = decodedJWT.getSubject();
