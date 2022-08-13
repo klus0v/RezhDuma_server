@@ -55,4 +55,6 @@ public class Vote {
 
     @ManyToMany(mappedBy = "votes")
     private List<User> users = new ArrayList<>();
+
+    private Boolean isActive = true;
 }

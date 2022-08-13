@@ -1,8 +1,7 @@
 package com.example.rezh.services;
 
 
-import com.example.rezh.entities.Appeal;
-import com.example.rezh.entities.File;
+import com.amazonaws.services.mq.model.NotFoundException;
 import com.example.rezh.entities.User;
 import com.example.rezh.entities.votes.Answer;
 import com.example.rezh.entities.votes.Question;
@@ -36,7 +35,7 @@ public class VoteService {
 
     public List<Vote> getVotes(String find) {
         if (find != null)
-            return voteRepository.findVotesWithWord("%" + find + "%");
+            return voteRepository.findVotes("%" + find + "%");
 
         return voteRepository.findAll();
     }
@@ -52,12 +51,17 @@ public class VoteService {
     }
 
     public Vote getBallot(Long id) {
+        var vote = voteRepository.getById(id);
+        if (!vote.getIsActive())
+            throw new NotFoundException("Голосование не найдено");
         return voteRepository.getById(id);
     }
 
     @Transactional
     public void deleteBallot(Long id) {
-        voteRepository.deleteById(id);
+        var vote = voteRepository.getById(id);
+        vote.setIsActive(false);
+        voteRepository.save(vote);
     }
 
     public void postVote(Vote ballot) {
