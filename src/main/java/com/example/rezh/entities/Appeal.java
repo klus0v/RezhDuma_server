@@ -34,6 +34,7 @@ public class Appeal {
 
     private String responsibleName;
 
+    @Column(columnDefinition = "TEXT")
     private String response;
 
     private Boolean frequent = false;
