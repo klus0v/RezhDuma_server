@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter  {
         http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/registration/**").permitAll();
         http.authorizeRequests().antMatchers(GET,"/api/news/**", "/api/projects/**", "/api/history/**", "/api/documents/**", "/api/appeals/popular/**", "/api/search/**",  "/api/votes/**").permitAll();
 
+        http.authorizeRequests().antMatchers("/api/users/set/**").hasAuthority("SUPER_ADMIN");
 
         http.authorizeRequests().antMatchers(GET, "/api/appeals/user/**").hasAuthority("USER");
         http.authorizeRequests().antMatchers(POST, "/api/appeals/user/**").hasAuthority("USER");
@@ -61,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter  {
         http.authorizeRequests().antMatchers(GET, "/api/appeals/admin/**").hasAuthority("ADMIN");
 
 
-        http.authorizeRequests().antMatchers("/api/users/**").hasAuthority("SUPER_ADMIN");
+
 
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);

@@ -2,7 +2,9 @@ package com.example.rezh.rest;
 
 
 import com.example.rezh.entities.User;
+import com.example.rezh.exceptions.ProjectNotFoundException;
 import com.example.rezh.exceptions.UserNotFoundException;
+import com.example.rezh.models.ProjectModel;
 import com.example.rezh.models.UserModel;
 import com.example.rezh.services.UserServiceImpl;
 import lombok.AllArgsConstructor;
@@ -27,6 +29,16 @@ public class UserRestController {
             return ResponseEntity.ok().body(UserModel.toModel(userService.getUser(userID)));
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e ) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @GetMapping("/set/admin")
+    public ResponseEntity getOneProject(@RequestParam(required = false) String email) {
+        try {
+            userService.addRoleToUser(email, "ADMIN");
+            return ResponseEntity.ok().body("Роль добавлена");
         } catch (Exception e ) {
             return ResponseEntity.badRequest().body("Произошла ошибка");
         }

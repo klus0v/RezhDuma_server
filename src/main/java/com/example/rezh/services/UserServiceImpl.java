@@ -33,12 +33,6 @@ import java.util.*;
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    @Value("${secret.key}")
-    private String secretKey;
-
-    @Value("${token.start}")
-    private String tokenStart;
-
     @Value("${confirm.link}")
     private String confirmLink;
 
@@ -157,8 +151,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (tokenString.isEmpty())
             return null;
 
-        String token = tokenString.substring(tokenStart.length());
-        Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
+        String token = tokenString.substring("Rezh ".length());
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT decodedJWT = verifier.verify(token);
         String tokenEmail = decodedJWT.getSubject();
